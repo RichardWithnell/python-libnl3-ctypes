@@ -71,43 +71,34 @@ class Application(object):
         while poller.poll():
             sock.nl_recvmsgs_default()
 
-    def parse_inner(self, attr, length):
-        length = c_int(length)
+    def parse_inner(self, attr):
+        attr_type = attr.nla_type()
 
-        if not attr.nla_ok(length):
-            raise Exception('First inner attr is not OK')
-        if attr.nla_type() != taskstats.TASKSTATS_TYPE_PID:
-            raise Exception('First inner attribute is not TYPE_PID')
+        if attr_type == taskstats.TASKSTATS_TYPE_PID:
+            print 'Dead pid is:', attr.nla_get_u32()
+            return
 
-        print 'Dead pid is:', attr.nla_get_u32()
+        if attr_type == taskstats.TASKSTATS_TYPE_TGID:
+            print 'Dead tgid is:', attr.nla_get_u32()
+            return
 
-        attr = attr.nla_next(byref(length))
-        if not attr.nla_ok(length):
-            raise Exception('Second inner attribute is not OK')
-        if attr.nla_type() != taskstats.TASKSTATS_TYPE_STATS:
-            raise Exception('Second inner attribute is not TYPE_STATS')
-        info = cast(attr.nla_data(), POINTER(taskstats.Taskstats_version_1)).contents
-        info.dump()
+        if attr_type == taskstats.TASKSTATS_TYPE_STATS:
+            info = cast(attr.nla_data(), POINTER(taskstats.Taskstats_version_1)).contents
+            info.dump()
+            return
 
-        attr = attr.nla_next(byref(length))
+        raise Exception('Unknown type in inner attributes', attr_type)
 
-        if length:
-            raise Exception('Extra space in inner attributes', length)
+    def parse_outer(self, attr):
+        attr_type = attr.nla_type()
 
-    def parse_outer(self, attr, length):
-        length = c_int(length)
-        if not attr.nla_ok(length):
-            raise Exception('Outer Attr is not OK')
-        if attr.nla_type() != taskstats.TASKSTATS_TYPE_AGGR_PID:
-            raise Exception('Nested (outer) attr is of invalid type')
+        if  attr_type in (taskstats.TASKSTATS_TYPE_AGGR_PID, taskstats.TASKSTATS_TYPE_AGGR_TGID):
+            for i in attr.attributes():
+                self.parse_inner(i)
+            print '-' * 80
+            return
 
-        self.parse_inner(attr.nested_attr(), attr.nla_len())
-
-        attr = attr.nla_next(byref(length))
-
-        if length:
-            raise Exception('Extra space after outer attr', length)
-
+        raise Exception('Nested (outer) attr is of invalid type', attr_type)
 
     def _callback(self, message):
         if self.outfile is None:
@@ -115,9 +106,10 @@ class Application(object):
 
         ghdr = message.nlmsg_hdr().genlmsg_hdr()
 
-        self.parse_outer(ghdr.genlmsg_attrdata(self.family_hdrsize), ghdr.genlmsg_attrlen(self.family_hdrsize))
+        for attr in ghdr.attributes(self.family_hdrsize):
+            self.parse_outer(attr)
 
-        print '-' * 80
+        print '=' * 80
 
 def main():
     Application().do_poll()
