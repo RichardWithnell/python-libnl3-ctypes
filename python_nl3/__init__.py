@@ -36,11 +36,19 @@ class StdNL(object):
         if ptr is None:
             self._as_parameter_ = self._alloc_ptr()
             self._free = self._free_ptr
-        else:
-            self._as_parameter_ = ptr
+            return
+
+        if isinstance(ptr, StdNL):
+            self._as_parameter_ = ptr._as_parameter_
+            free = getattr(self, '_free', None)
+            if free is not None:
+                self._free = free
+            return
+
+        self._as_parameter_ = ptr
 
     def __del__(self):
-        _free = getattr(self, '_free', None)
-        if _free is not None:
-            _free(self)
+        free = getattr(self, '_free', None)
+        if free is not None:
+            free(self)
 

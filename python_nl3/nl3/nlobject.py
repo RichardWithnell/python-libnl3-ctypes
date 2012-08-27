@@ -12,11 +12,19 @@ c_nl_object_p = c_void_p
 #TODO: alloc/free
 class NlObject(StdNL):
     def __init__(self, ptr=None, cache=None):
+        # create by known cache & c_void_p ptr
         if (ptr is not None) and (cache is not None):
             self._cache = cache # prevent from cache garbage collection
             super(NlObject, self).__init__(ptr)
             return
-        raise NotImplementedError(':)')
+
+        # creation by known NlObject instance (copying constructor)
+        if isinstance(ptr, NlObject) and (cache is None):
+            self._cache = ptr._cache
+            super(NlObject, self).__init__(ptr)
+            return
+
+        raise NotImplementedError(':)', ptr, cache)
 
 
     @fwrap(nl, None, c_nl_object_p, c_nl_object_p)

@@ -10,6 +10,9 @@ from ..nlobject import NlObject
 c_nfnl_ct_p = c_void_p
 
 class Ct(NlObject):
+
+    #TODO:  when creating from NlObject - check type of object = if not - ValueError
+
     # returnc c_int in original..
     @wrap(nfnl, None, c_bool, c_nfnl_ct_p, c_int)
     def nfnl_ct_test_packets(): pass

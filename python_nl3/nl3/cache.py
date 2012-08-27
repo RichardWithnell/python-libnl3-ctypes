@@ -21,6 +21,9 @@ _foreach_cbtype = CFUNCTYPE(None, c_nl_cache_p, c_void_p)
 def nl_cache_foreach():
     """ nl_cache_foreach(cache, callback, NULL);"""
 
+# cache names housekeeping
+cache_name2class = dict()
+
 class CacheIterator(object):
     def __init__(self, cache):
         self._cache = cache

@@ -1,15 +1,13 @@
 #!/usr/bin/python
 #coding: utf-8
 
-from python_nl3.nl3.netfilter.socket  import Socket
-from python_nl3.nl3.netfilter.ctcache  import NfNlCtCache
+import python_nl3.nl3.netfilter.ctcache
+from python_nl3.nl3.netfilter import NETLINK_NETFILTER
+from python_nl3.nl3.cachemgr import CacheMgr
 
 def main():
-    sock = Socket()
-    sock.nfnl_connect()
-
-    cache = NfNlCtCache(sock)
-
+    mngr = CacheMgr(None, NETLINK_NETFILTER)
+    cache = mngr.nl_cache_mngr_add('netfilter/ct')
     for ct in cache:
         print 'Begin', '-' * 80
         for direction in (0, 1):
