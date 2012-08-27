@@ -4,9 +4,10 @@
 from __future__ import absolute_import
 
 from ctypes import c_void_p, CFUNCTYPE
-from . import nl, wrap, fwrap
+from . import nl, fwrap
 from .. import StdNL, swrap
 from .nlobject import NlObject, c_nl_object_p
+import traceback
 
 c_nl_cache_p = c_void_p
 
@@ -43,7 +44,10 @@ class NlCache(StdNL):
 
     def nl_cache_foreach(self, callback):
         def c_callback(obj, _void_ptr):
-            return callback(self._objclass(obj, self))
+            try:
+                return callback(self._objclass(obj, self))
+            except:
+                traceback.print_exc()
 
         nl_cache_foreach(self, _foreach_cbtype(c_callback), None)
 
