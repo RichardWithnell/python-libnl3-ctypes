@@ -34,7 +34,11 @@ class Application(object):
         return msg
 
     def _callback(self, message):
-        for attr in message.nlmsg_hdr().genlmsg_hdr().attributes(self.family_hdrsize):
+        nlhdr = message.nlmsg_hdr()
+        if not nlhdr.genlmsg_valid_hdr(self.family_hdrsize):
+            raise Exception('Internal error')
+        ghdr = nlhdr.genlmsg_hdr(self.family_hdrsize)
+        for attr in ghdr:
             attr_type = attr.nla_type()
 
             if  attr_type not in (taskstats.TASKSTATS_TYPE_AGGR_PID, taskstats.TASKSTATS_TYPE_AGGR_TGID):

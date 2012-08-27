@@ -11,7 +11,7 @@ from ..nlmsghdr import NlMsgHdr as _NlMsgHdr
 from ..nlmsghdr import c_nlmsghdr_p
 from . import genl
 
-class NlMsgHdr(_NlMsgHdr):
+class NlMsgHdr_no_hdrlen(_NlMsgHdr):
 
     # return c_int in original
     @wrap(genl, None, c_bool, c_nlmsghdr_p, c_int)
@@ -33,3 +33,10 @@ class NlMsgHdr(_NlMsgHdr):
             }
             """
             return GenlMsgHdr(self.nlmsg_data(), self)
+
+class NlMsgHdr(NlMsgHdr_no_hdrlen):
+    def genlmsg_hdr(self, hdrlen=None):
+        ghdr = super(NlMsgHdr, self).genlmsg_hdr()
+        if hdrlen is not None:
+            ghdr.hdrlen = hdrlen
+        return ghdr
