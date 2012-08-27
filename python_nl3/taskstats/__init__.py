@@ -3,7 +3,7 @@
 
 from __future__ import absolute_import
 
-from ctypes import Structure, c_uint16, c_uint32, c_uint8, c_uint64, c_char
+from ctypes import Structure, c_uint16, c_uint32, c_uint8, c_uint64, c_char, sizeof, cast, POINTER
 
 TASKSTATS_CMD_GET = 1
 #TASKSTATS_VERSION = 8 # o_O some structs changes...
@@ -47,6 +47,14 @@ class Taskstats_version_1(Structure):
             if name.startswith('_'):
                 continue
             print '{0}={1}'.format(name, getattr(self, name))
+
+_sizeof = sizeof(Taskstats_version_1)
+
+def from_data(pointer, length):
+    if length < _sizeof:
+        raise ValueError('Not enought data to build structure. Required at least %d, passed %d', _sizeof, length)
+
+    return cast(pointer, POINTER(Taskstats_version_1)).contents
 
 """
 //#################### version 1 ended here

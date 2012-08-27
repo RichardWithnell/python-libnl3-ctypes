@@ -8,10 +8,7 @@ from python_nl3.nl3.socket          import NL_CB_MSG_IN, NL_CB_CUSTOM
 from python_nl3.nl3.genl.message    import Message
 from python_nl3.nl3.genl.controller import CtrlCache
 from python_nl3.nl3  import NL_AUTO_PORT, NL_AUTO_SEQ
-from python_nl3.libc import FILE
 from python_nl3      import taskstats
-
-from ctypes import POINTER, cast
 import select
 import sys
 
@@ -36,6 +33,32 @@ class Application(object):
         msg.nla_put_string(taskstats.TASKSTATS_CMD_ATTR_REGISTER_CPUMASK, cpumask)
         return msg
 
+    def _callback(self, message):
+        for attr in message.nlmsg_hdr().genlmsg_hdr().attributes(self.family_hdrsize):
+            attr_type = attr.nla_type()
+
+            if  attr_type not in (taskstats.TASKSTATS_TYPE_AGGR_PID, taskstats.TASKSTATS_TYPE_AGGR_TGID):
+                raise Exception('Nested (outer) attr is of invalid type', attr_type)
+
+            for attr in attr.attributes():
+                attr_type = attr.nla_type()
+
+                if attr_type == taskstats.TASKSTATS_TYPE_PID:
+                    print 'Dead pid is:', attr.nla_get_u32()
+                    continue
+
+                if attr_type == taskstats.TASKSTATS_TYPE_TGID:
+                    print 'Dead tgid is:', attr.nla_get_u32()
+                    continue
+
+                if attr_type == taskstats.TASKSTATS_TYPE_STATS:
+                    info = taskstats.from_data(attr.nla_data(), attr.nla_len())
+                    info.dump()
+                    continue
+
+                raise Exception('Unknown type in inner attributes', attr_type)
+            print '-' * 80
+
     def do_poll(self):
         sock = Socket()
         sock.genl_connect()
@@ -56,45 +79,6 @@ class Application(object):
         while poller.poll():
             sock.nl_recvmsgs_default()
 
-    def parse_inner(self, attr):
-        attr_type = attr.nla_type()
-
-        if attr_type == taskstats.TASKSTATS_TYPE_PID:
-            print 'Dead pid is:', attr.nla_get_u32()
-            return
-
-        if attr_type == taskstats.TASKSTATS_TYPE_TGID:
-            print 'Dead tgid is:', attr.nla_get_u32()
-            return
-
-        if attr_type == taskstats.TASKSTATS_TYPE_STATS:
-            info = cast(attr.nla_data(), POINTER(taskstats.Taskstats_version_1)).contents
-            info.dump()
-            return
-
-        raise Exception('Unknown type in inner attributes', attr_type)
-
-    def parse_outer(self, attr):
-        attr_type = attr.nla_type()
-
-        if  attr_type in (taskstats.TASKSTATS_TYPE_AGGR_PID, taskstats.TASKSTATS_TYPE_AGGR_TGID):
-            for i in attr.attributes():
-                self.parse_inner(i)
-            print '-' * 80
-            return
-
-        raise Exception('Nested (outer) attr is of invalid type', attr_type)
-
-    def _callback(self, message):
-        if self.outfile is None:
-            self.outfile = FILE(sys.stdout)
-
-        ghdr = message.nlmsg_hdr().genlmsg_hdr()
-
-        for attr in ghdr.attributes(self.family_hdrsize):
-            self.parse_outer(attr)
-
-        print '=' * 80
 
 def main():
     Application().do_poll()
