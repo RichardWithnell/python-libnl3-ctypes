@@ -3,10 +3,11 @@
 
 from __future__ import absolute_import
 
-from ctypes import c_int, c_void_p
+from ctypes import c_int, c_void_p, CFUNCTYPE
 from . import nl,  errcode_check, wrap
 from .. import nullptr_check, StdNL, swrap
-from .message import c_msg_p
+from .message import c_msg_p, Message
+import traceback
 
 NL_CB_MSG_IN = 5
 NL_CB_CUSTOM = 3
@@ -21,15 +22,39 @@ def nl_socket_alloc(): pass
 @swrap(nl, None, None, c_socket_p)
 def nl_socket_free(): pass
 
+@swrap(nl, errcode_check, c_int, c_socket_p, c_int, c_int, c_void_p, c_void_p)
+def nl_socket_modify_cb():
+    """
+    int nl_socket_modify_cb(struct nl_sock * sk,
+    enum nl_cb_type type,
+    enum nl_cb_kind kind,
+    nl_recvmsg_msg_cb_t func,
+    void * arg 
+    )
+    """
+
+_cbtype = CFUNCTYPE(c_int, c_msg_p, c_void_p)
+arr = []
 class Socket(StdNL):
     """
     Low-level libnl interface
     """
     _alloc_ptr = nl_socket_alloc
     _free_ptr = nl_socket_free
+    _message_class = Message
 
-    @wrap(nl, errcode_check, c_int, c_socket_p, c_int, c_int, c_void_p, c_void_p)
-    def nl_socket_modify_cb(): pass
+    def nl_socket_modify_cb(self, type_, kind, func):
+        msgcls = self._message_class
+        def c_callback(msg, _void_ptr):
+            try:
+                ret = func(msgcls(msg))
+                return NL_OK if ret is None else int(ret)
+            except:
+                traceback.print_exc()
+                return NL_STOP
+        qwe = _cbtype(c_callback)
+        arr.append(qwe)
+        return nl_socket_modify_cb(self, type_, kind, qwe, None)
 
     @wrap(nl, None, c_int, c_socket_p)
     def nl_socket_get_fd(): pass

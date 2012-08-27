@@ -8,8 +8,11 @@ from .. import errcode_check, wrap
 from ..socket import Socket as _Socket
 from ..socket import c_socket_p
 from . import genl
+from .message import Message
 
 class Socket(_Socket):
+    _message_class = Message
+
     @wrap(genl, errcode_check, c_int, c_socket_p)
     def genl_connect(): pass
 

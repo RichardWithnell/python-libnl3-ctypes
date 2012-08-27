@@ -4,18 +4,16 @@
 #from __future__ import absolute_import
 
 from python_nl3.nl3.genl.socket     import Socket
-from python_nl3.nl3.socket          import NL_CB_MSG_IN, NL_CB_CUSTOM, NL_OK, NL_STOP
-from python_nl3.nl3.genl.message    import Message, c_msg_p
+from python_nl3.nl3.socket          import NL_CB_MSG_IN, NL_CB_CUSTOM
+from python_nl3.nl3.genl.message    import Message
 from python_nl3.nl3.genl.controller import CtrlCache
 from python_nl3.nl3  import NL_AUTO_PORT, NL_AUTO_SEQ
 from python_nl3.libc import FILE
 from python_nl3      import taskstats
 
-from ctypes import CFUNCTYPE, sizeof, POINTER, cast, c_int, c_void_p, c_char, byref
+from ctypes import POINTER, cast
 import select
 import sys
-
-import traceback
 
 class Application(object):
     def __init__(self):
@@ -27,15 +25,6 @@ class Application(object):
         #family_id = genl_ctrl_resolve(sock, taskstats.TASKSTATS_GENL_NAME)
         self.family_id = family.id_
         self.family_hdrsize = family.hdrsize
-
-    def __callback(self, msg_p, _void_p):
-        try:
-            self._callback(Message(msg_p))
-        except:
-            traceback.print_exc() #print 'Exception in callback!', exc
-            return NL_STOP
-        else:
-            return NL_OK
 
     def prepare_death_message(self):
         # multiprocessing.cpu_count() may be used for that, but we really need only online CPUS, anot not 0-{count}
@@ -57,11 +46,7 @@ class Application(object):
         # http://www.infradead.org/~tgr/libnl/doc/core.html#core_sk_seq_num
         sock.nl_socket_disable_seq_check()
 
-        cbtype = CFUNCTYPE(c_int, c_msg_p, c_void_p)
-
-        callback = cbtype(self.__callback)
-
-        sock.nl_socket_modify_cb(NL_CB_MSG_IN, NL_CB_CUSTOM, callback, None)
+        sock.nl_socket_modify_cb(NL_CB_MSG_IN, NL_CB_CUSTOM, self._callback)
 
         # in order to able to interrupt process, we will poll() socket instead of blocking recv()
         # when python inside ctypes's function, SIGINT handling is suspended
