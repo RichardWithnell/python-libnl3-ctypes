@@ -14,16 +14,16 @@ NL_CB_CUSTOM = 3
 NL_OK = 0
 NL_STOP = 2
 
-c_socket_p = c_void_p
+c_nl_sock_p = c_void_p
 
-@swrap(nl, nullptr_check, c_socket_p)
+@swrap(nl, nullptr_check, c_nl_sock_p)
 def nl_socket_alloc(): pass
 
-@swrap(nl, None, None, c_socket_p)
+@swrap(nl, None, None, c_nl_sock_p)
 def nl_socket_free():
     """ Close file desriptor and free memory """
 
-@swrap(nl, errcode_check, c_int, c_socket_p, c_int, c_int, c_void_p, c_void_p)
+@swrap(nl, errcode_check, c_int, c_nl_sock_p, c_int, c_int, c_void_p, c_void_p)
 def nl_socket_modify_cb():
     """
     int nl_socket_modify_cb(struct nl_sock * sk,
@@ -58,29 +58,29 @@ class Socket(StdNL):
         arr.append(qwe)
         return nl_socket_modify_cb(self, type_, kind, qwe, None)
 
-    @wrap(nl, None, c_int, c_socket_p)
+    @wrap(nl, None, c_int, c_nl_sock_p)
     def nl_socket_get_fd(): pass
 
-    @wrap(nl, errcode_check, c_int, c_socket_p, c_msg_p)
+    @wrap(nl, errcode_check, c_int, c_nl_sock_p, c_msg_p)
     def nl_send_auto_complete(): pass
 
-    @wrap(nl, errcode_check, c_int, c_socket_p)
+    @wrap(nl, errcode_check, c_int, c_nl_sock_p)
     def nl_recvmsgs_default(): pass
 
-    @wrap(nl, None, None, c_socket_p)
+    @wrap(nl, None, None, c_nl_sock_p)
     def nl_socket_disable_seq_check(): pass
 
-    @wrap(nl, errcode_check, c_int, c_socket_p)
+    @wrap(nl, errcode_check, c_int, c_nl_sock_p)
     def nl_socket_set_nonblocking(): pass
 
-    @wrap(nl, errcode_check, c_int, c_socket_p)
+    @wrap(nl, errcode_check, c_int, c_nl_sock_p)
     def nl_wait_for_ack(): pass
 
-    @wrap(nl, None, None, c_socket_p)
+    @wrap(nl, None, None, c_nl_sock_p)
     def nl_close():
         """ Just close file descriptor, not free memory """
 
-    @wrap(nl, errcode_check, c_int, c_socket_p, c_int)
+    @wrap(nl, errcode_check, c_int, c_nl_sock_p, c_int)
     def nl_connect():
         """ int nl_connect(struct nl_sock * sk, int protocol) """
 

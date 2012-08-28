@@ -9,11 +9,11 @@ from .genl_family import c_genl_family_p, Family
 from ... import swrap, nullptr_check
 from .. import errcode_check, fwrap
 
-from ..socket import c_socket_p
+from ..socket import c_nl_sock_p
 from ..cache import NlCache, c_nl_cache_p
 
 
-@swrap(genl, errcode_check, c_int, c_socket_p, POINTER(c_nl_cache_p))
+@swrap(genl, errcode_check, c_int, c_nl_sock_p, POINTER(c_nl_cache_p))
 def genl_ctrl_alloc_cache():
     """genl_ctrl_alloc_cache(struct nl_sock *, struct nl_cache **);"""
 
