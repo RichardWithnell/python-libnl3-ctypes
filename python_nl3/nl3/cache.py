@@ -43,9 +43,10 @@ class NlCache(StdNL):
     _objclass = NlObject
 
     def nl_cache_foreach(self, callback):
+        """ deprecated in python """
         def c_callback(obj, _void_ptr):
             try:
-                return callback(self._objclass(obj, self))
+                callback(self._objclass(obj, self))
             except:
                 traceback.print_exc()
 

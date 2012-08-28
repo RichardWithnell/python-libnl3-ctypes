@@ -37,6 +37,21 @@ class NlMsgHdr_no_hdrlen(_NlMsgHdr):
 class NlMsgHdr(NlMsgHdr_no_hdrlen):
     def genlmsg_hdr(self, hdrlen=None):
         ghdr = super(NlMsgHdr, self).genlmsg_hdr()
-        if hdrlen is not None:
-            ghdr.hdrlen = hdrlen
+
+        if hdrlen is None:
+            hdrlen = getattr(self, '_family_hdrsize', None)
+
+        if hdrlen is None:
+            raise Exception('Header size is not known')
+
+        ghdr.hdrlen = hdrlen
         return ghdr
+
+    def genlmsg_valid_hdr(self, hdrlen=None):
+        if hdrlen is None:
+            hdrlen = getattr(self, '_family_hdrsize', None)
+
+        if hdrlen is None:
+            raise Exception('Header size is not known')
+
+        return super(NlMsgHdr, self).genlmsg_valid_hdr(hdrlen)

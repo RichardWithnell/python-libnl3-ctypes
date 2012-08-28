@@ -20,7 +20,8 @@ c_socket_p = c_void_p
 def nl_socket_alloc(): pass
 
 @swrap(nl, None, None, c_socket_p)
-def nl_socket_free(): pass
+def nl_socket_free():
+    """ Close file desriptor and free memory """
 
 @swrap(nl, errcode_check, c_int, c_socket_p, c_int, c_int, c_void_p, c_void_p)
 def nl_socket_modify_cb():
@@ -42,6 +43,7 @@ class Socket(StdNL):
     _alloc_ptr = nl_socket_alloc
     _free_ptr = nl_socket_free
     _message_class = Message
+    _protocol = None
 
     def nl_socket_modify_cb(self, type_, kind, func):
         msgcls = self._message_class
@@ -73,6 +75,23 @@ class Socket(StdNL):
 
     @wrap(nl, errcode_check, c_int, c_socket_p)
     def nl_wait_for_ack(): pass
+
+    @wrap(nl, None, None, c_socket_p)
+    def nl_close():
+        """ Just close file descriptor, not free memory """
+
+    @wrap(nl, errcode_check, c_int, c_socket_p, c_int)
+    def nl_connect():
+        """ int nl_connect(struct nl_sock * sk, int protocol) """
+
+    def __enter__(self):
+        if self._protocol is None:
+            raise Exception('Unknown family, so can not connect automagically')
+        self.nl_connect(self._protocol)
+        return self
+
+    def __exit__(self, type, value, tb):
+        self.nl_close()
 
     def fileno(self):
         return self.nl_socket_get_fd()

@@ -56,6 +56,16 @@ def from_data(pointer, length):
 
     return cast(pointer, POINTER(Taskstats_version_1)).contents
 
+def _resolve_family():
+    from ..socket import Socket
+    from ..controller import CtrlCache
+    with Socket() as sock:
+        family = CtrlCache(sock).genl_ctrl_search_by_name(TASKSTATS_GENL_NAME)
+    return (family.id_, family.hdrsize)
+
+
+(family_id, family_hdrsize) = _resolve_family()
+
 """
 //#################### version 1 ended here
         char    ac_comm[TS_COMM_LEN]

@@ -19,21 +19,11 @@ def genl_ctrl_alloc_cache():
 
 class CtrlCache(NlCache):
     def __init__(self, sock):
+        self.socket = sock # prevent fropm garbage collecting
+
         xxx = c_nl_cache_p()
         self._alloc_ptr = lambda : xxx if genl_ctrl_alloc_cache(sock, byref(xxx)) else xxx
         super(CtrlCache, self).__init__()
-
-    @staticmethod
-    @swrap(genl, errcode_check, c_int, c_socket_p, c_char_p)
-    def genl_ctrl_resolve():
-        """int genl_ctrl_resolve(struct nl_sock *, const char *); """
-
-    @staticmethod
-    @swrap(genl, errcode_check, c_int, c_socket_p, c_char_p, c_char_p)
-    def genl_ctrl_resolve_grp():
-        """int genl_ctrl_resolve_grp(struct nl_sock *sk,
-          const char *family,
-          const char *grp);"""
 
     @fwrap(genl, nullptr_check, c_genl_family_p, c_nl_cache_p, c_int)
     def genl_ctrl_search(self, result):

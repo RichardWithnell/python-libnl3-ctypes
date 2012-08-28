@@ -3,41 +3,21 @@
 
 #from __future__ import absolute_import
 
-from python_nl3.nl3.genl.socket     import Socket
-from python_nl3.nl3.socket          import NL_CB_MSG_IN, NL_CB_CUSTOM
-from python_nl3.nl3.genl.message    import Message
-from python_nl3.nl3.genl.controller import CtrlCache
-from python_nl3.nl3  import NL_AUTO_PORT, NL_AUTO_SEQ
-from python_nl3      import taskstats
 import select
 import sys
 
+from python_nl3.nl3.socket                    import NL_CB_MSG_IN, NL_CB_CUSTOM
+from python_nl3.nl3.genl                      import taskstats
+
+# Produce taskstats messages
+from python_nl3.nl3.genl.taskstats.socket     import Socket
+
 class Application(object):
-    def __init__(self):
-        self.outfile = None
-
-        sock = Socket()
-        sock.genl_connect()
-        family = CtrlCache(sock).genl_ctrl_search_by_name(taskstats.TASKSTATS_GENL_NAME)
-        #family_id = genl_ctrl_resolve(sock, taskstats.TASKSTATS_GENL_NAME)
-        self.family_id = family.id_
-        self.family_hdrsize = family.hdrsize
-
-    def prepare_death_message(self):
-        # multiprocessing.cpu_count() may be used for that, but we really need only online CPUS, anot not 0-{count}
-        with open('/sys/devices/system/cpu/online', 'rt') as cpus_file:
-            cpumask = cpus_file.read()
-
-        msg = Message()
-        msg.genlmsg_put(NL_AUTO_PORT, NL_AUTO_SEQ, self.family_id, 0, 0, taskstats.TASKSTATS_CMD_GET, taskstats.TASKSTATS_GENL_VERSION)
-        msg.nla_put_string(taskstats.TASKSTATS_CMD_ATTR_REGISTER_CPUMASK, cpumask)
-        return msg
-
     def _callback(self, message):
         nlhdr = message.nlmsg_hdr()
-        if not nlhdr.genlmsg_valid_hdr(self.family_hdrsize):
+        if not nlhdr.genlmsg_valid_hdr():
             raise Exception('Internal error')
-        ghdr = nlhdr.genlmsg_hdr(self.family_hdrsize)
+        ghdr = nlhdr.genlmsg_hdr()
         for attr in ghdr:
             attr_type = attr.nla_type()
 
@@ -64,24 +44,17 @@ class Application(object):
             print '-' * 80
 
     def do_poll(self):
-        sock = Socket()
-        sock.genl_connect()
+        with Socket() as sock:
+            sock.task_register_cpumask()
+            sock.nl_socket_modify_cb(NL_CB_MSG_IN, NL_CB_CUSTOM, self._callback)
 
-        sock.nl_send_auto_complete(self.prepare_death_message())
-        sock.nl_wait_for_ack()
-
-        # http://www.infradead.org/~tgr/libnl/doc/core.html#core_sk_seq_num
-        sock.nl_socket_disable_seq_check()
-
-        sock.nl_socket_modify_cb(NL_CB_MSG_IN, NL_CB_CUSTOM, self._callback)
-
-        # in order to able to interrupt process, we will poll() socket instead of blocking recv()
-        # when python inside ctypes's function, SIGINT handling is suspended
-        sock.nl_socket_set_nonblocking()
-        poller = select.poll()
-        poller.register(sock, select.POLLIN)
-        while poller.poll():
-            sock.nl_recvmsgs_default()
+            # in order to able to interrupt process, we will poll() socket instead of blocking recv()
+            # when python inside ctypes's function, SIGINT handling is suspended
+            sock.nl_socket_set_nonblocking()
+            poller = select.poll()
+            poller.register(sock, select.POLLIN)
+            while poller.poll():
+                sock.nl_recvmsgs_default()
 
 
 def main():
