@@ -6,7 +6,7 @@ from __future__ import absolute_import
 from ctypes import c_int, c_void_p, CFUNCTYPE
 from . import nl,  errcode_check, wrap
 from .. import nullptr_check, StdNL, swrap
-from .message import c_msg_p, Message
+from .message import c_nl_msg_p, Message
 import traceback
 
 NL_CB_MSG_IN = 5
@@ -34,7 +34,7 @@ def nl_socket_modify_cb():
     )
     """
 
-_cbtype = CFUNCTYPE(c_int, c_msg_p, c_void_p)
+_cbtype = CFUNCTYPE(c_int, c_nl_msg_p, c_void_p)
 arr = []
 class Socket(StdNL):
     """
@@ -61,7 +61,7 @@ class Socket(StdNL):
     @wrap(nl, None, c_int, c_nl_sock_p)
     def nl_socket_get_fd(): pass
 
-    @wrap(nl, errcode_check, c_int, c_nl_sock_p, c_msg_p)
+    @wrap(nl, errcode_check, c_int, c_nl_sock_p, c_nl_msg_p)
     def nl_send_auto_complete(): pass
 
     @wrap(nl, errcode_check, c_int, c_nl_sock_p)
