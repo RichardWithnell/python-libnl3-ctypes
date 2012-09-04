@@ -6,7 +6,7 @@
 import select
 import sys
 
-from python_nl3.nl3.socket                    import NL_CB_MSG_IN, NL_CB_CUSTOM
+from python_nl3.nl3.socket                    import NL_CB_VALID, NL_CB_CUSTOM
 from python_nl3.nl3.genl                      import taskstats
 
 # Produce taskstats messages
@@ -46,7 +46,7 @@ class Application(object):
     def do_poll(self):
         with Socket() as sock:
             sock.task_register_cpumask()
-            sock.nl_socket_modify_cb(NL_CB_MSG_IN, NL_CB_CUSTOM, self._callback)
+            sock.nl_socket_modify_cb(NL_CB_VALID, NL_CB_CUSTOM, self._callback)
 
             # in order to able to interrupt process, we will poll() socket instead of blocking recv()
             # when python inside ctypes's function, SIGINT handling is suspended

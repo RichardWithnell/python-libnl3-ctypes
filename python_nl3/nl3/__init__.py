@@ -13,7 +13,19 @@ nl = cdll.LoadLibrary(find_library('nl-3'))
 #TODO: move to separate modules
 NL_AUTO_PORT = 0
 NL_AUTO_SEQ = 0
+
 NLM_F_REQUEST = 1
+NLM_F_MULTI = 2
+NLM_F_ACK = 4
+NLM_F_ECHO = 8
+NLM_F_ROOT = 0x100
+NLM_F_MATCH = 0x200
+NLM_F_ATOMIC = 0x400
+NLM_F_DUMP = NLM_F_ROOT|NLM_F_MATCH
+NLM_F_REPLACE = 0x100
+NLM_F_EXCL = 0x200
+NLM_F_CREATE = 0x400
+NLM_F_APPEND = 0x800
 
 def wrap(*args):
     """
