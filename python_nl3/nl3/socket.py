@@ -9,8 +9,10 @@ from .. import nullptr_check, StdNL, swrap
 from .message import c_nl_msg_p, Message
 import traceback
 
-NL_CB_MSG_IN = 5
+NL_CB_VALID = 0
 NL_CB_CUSTOM = 3
+NL_CB_MSG_IN = 5
+
 NL_OK = 0
 NL_STOP = 2
 
