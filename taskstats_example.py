@@ -2,15 +2,15 @@
 #coding: utf-8
 
 #from __future__ import absolute_import
+from _ctypes import sizeof
 
 import select
-import sys
 
-from python_nl3.nl3.socket                    import NL_CB_VALID, NL_CB_CUSTOM
-from python_nl3.nl3.genl                      import taskstats
+from lib.nl3.socket                    import NL_CB_VALID, NL_CB_CUSTOM
+from lib.nl3.genl                      import taskstats
 
 # Produce taskstats messages
-from python_nl3.nl3.genl.taskstats.socket     import Socket
+from lib.nl3.genl.taskstats.socket     import Socket
 
 class Application(object):
     def _callback(self, message):
@@ -36,7 +36,14 @@ class Application(object):
                     continue
 
                 if attr_type == taskstats.TASKSTATS_TYPE_STATS:
-                    info = taskstats.from_data(attr.nla_data(), attr.nla_len())
+                    length = attr.len()
+                    size = sizeof(taskstats.Taskstats_version_1)
+                    if length < size:
+                        raise ValueError('Not enought data to build structure. Required at least %d, passed %d', size,
+                            length)
+                    data = attr.data()
+                    #noinspection PyUnresolvedReferences
+                    info = taskstats.Taskstats_version_1.from_address(data)
                     info.dump()
                     continue
 
