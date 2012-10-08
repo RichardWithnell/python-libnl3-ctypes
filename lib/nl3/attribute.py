@@ -52,22 +52,20 @@ class Attribute(object):
         self._parent = parent
         self._as_parameter_ = ptr
 
+    #TODO: make them property
     ok = lambda self, len: bool(nla_ok(self, len))
     data = lambda self: nla_data(self)
     len = lambda self: nla_len(self)
     type = lambda self: nla_type(self)
-    get_u32 = lambda self: nla_get_u32(self)
-    get_u64 = lambda self: nla_get_u64(self)
+
+    u32 = property(nla_get_u32)
+    u64 = property(nla_get_u64)
 
     def next(self, remainig):
         rem = c_int(remainig)
         # never return NULL
         x = nla_next(self, byref(rem))
         return (Attribute(ptr=x, parent=self._parent), rem)
-
-    ########### custom  functions
-    def nested_attr(self):
-        return
 
     def attributes(self):
         attr = Attribute(ptr=self.data(), parent=self._parent)

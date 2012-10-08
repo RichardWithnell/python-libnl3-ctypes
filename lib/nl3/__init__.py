@@ -4,9 +4,9 @@
 from __future__ import absolute_import
 
 from ..import MYDLL, wrap_char_ptr_no_check, common_loader
-from ctypes import c_int, c_void_p
+from ctypes import c_int
 
-nl = MYDLL('linl-3.so.200')
+nl = MYDLL('libnl-3.so.200')
 
 #TODO: move to separate modules
 NL_AUTO_PORT = 0
@@ -42,4 +42,4 @@ def errcode_check(result, func, args):
 
 
 def wrap_nl_err(*args):
-    return lambda original: common_loader(original, errcode_check, c_void_p, *args)
+    return lambda original: common_loader(original, errcode_check, c_int, *args)

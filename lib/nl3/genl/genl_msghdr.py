@@ -28,8 +28,9 @@ def genlmsg_data(gnlh):
 
 
 class GenlMsgHdr(object):
-    def __init__(self, ptr, parent, hdrlen):
-        self._hdrlen = hdrlen
+    _hdrlen = 0
+
+    def __init__(self, ptr, parent):
         if ptr is not None:
             self._as_parameter_ = ptr
             self._parent = parent

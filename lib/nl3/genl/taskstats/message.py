@@ -3,11 +3,18 @@
 
 from __future__ import absolute_import
 
-from .import TASKSTATS_GENL_VERSION, TASKSTATS_CMD_GET, TASKSTATS_CMD_ATTR_REGISTER_CPUMASK
-from .import family_id, family_hdrsize
-from .util import get_all_cpus
-from ..message import Message as _Message
 from ...import NL_AUTO_PORT, NL_AUTO_SEQ
+from ..message import Message as _Message
+from ..ctrl.controller import CtrlCache
+from .util import get_all_cpus
+from .import TASKSTATS_GENL_VERSION, TASKSTATS_CMD_GET, TASKSTATS_CMD_ATTR_REGISTER_CPUMASK, TASKSTATS_GENL_NAME
+
+
+def _resolve_family():
+    family = CtrlCache().search_by_name(TASKSTATS_GENL_NAME)
+    return (family.id, family.hdrsize)
+
+(family_id, family_hdrsize) = _resolve_family()
 
 class Message(_Message):
     #noinspection PyMethodOverriding

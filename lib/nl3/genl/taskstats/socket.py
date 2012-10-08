@@ -3,8 +3,8 @@
 
 from __future__ import absolute_import
 
-from .message import Message
 from ..socket import Socket as Socket_
+from .message import Message
 
 class Socket(Socket_):
     _message_class = Message
@@ -17,3 +17,8 @@ class Socket(Socket_):
         self.wait_for_ack()
         # http://www.infradead.org/~tgr/libnl/doc/core.html#core_sk_seq_num
         self.disable_seq_check()
+
+
+
+
+

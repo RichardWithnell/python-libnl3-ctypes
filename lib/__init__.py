@@ -102,3 +102,4 @@ def wrap_int(*args):
 # wrap custom types without check
 def wrap_custom(lib, custom, *args):
     return lambda original: common_loader(original, None, custom, lib, *args)
+

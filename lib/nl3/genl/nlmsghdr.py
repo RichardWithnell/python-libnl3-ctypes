@@ -29,30 +29,14 @@ except AttributeError:
         return nlmsg_data(nlh)
 
 class NlMsgHdr(_NlMsgHdr):
-    def hdr(self, hdrlen):
+    _GenlMsgHdr_class = GenlMsgHdr
+
+    def __init__(self, ptr, parent):
+        super(NlMsgHdr, self).__init__(ptr, parent)
+
+    def hdr(self):
         ptr = genlmsg_hdr(self)
-        return GenlMsgHdr(ptr=ptr, parent=self, hdrlen=hdrlen)
+        return self._GenlMsgHdr_class(ptr=ptr, parent=self)
 
-    #    def genlmsg_hdr(self, hdrlen=None):
-    #        ghdr = super(NlMsgHdr, self).genlmsg_hdr()
-    #
-    #        if hdrlen is None:
-    #            hdrlen = getattr(self, '_family_hdrsize', None)
-    #
-    #        if hdrlen is None:
-    #            raise Exception('Header size is not known')
-    #
-    #        ghdr.hdrlen = hdrlen
-    #        return ghdr
-
-    valid_hdr = lambda self, hdrlen: bool(genlmsg_valid_hdr(self, hdrlen))
-
-#
-#    def genlmsg_valid_hdr(self, hdrlen=None):
-#        if hdrlen is None:
-#            hdrlen = getattr(self, '_family_hdrsize', None)
-#
-#        if hdrlen is None:
-#            raise Exception('Header size is not known')
-#
-#        return super(NlMsgHdr, self).genlmsg_valid_hdr(hdrlen)
+    def valid_hdr(self):
+        return bool(genlmsg_valid_hdr(self, self._GenlMsgHdr_class._hdrlen))

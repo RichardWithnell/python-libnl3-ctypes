@@ -89,21 +89,26 @@ class Socket(object):
     _message_class = Message
     _protocol = None
 
-    def __init__(self):
+    def __init__(self, protocol=None):
         self._need_free = False
         self.__cb_storage = dict()
         self._as_parameter_ = nl_socket_alloc()
         self._need_free = True
-
+        self._protocol = protocol
 
     close = lambda self: nl_close(self)
-    connect = lambda self, proto: nl_connect(self, proto)
     wait_for_ack = lambda self: nl_wait_for_ack(self)
     set_nonblocking = lambda self: nl_socket_set_nonblocking(self)
     disable_seq_check = lambda self: nl_socket_disable_seq_check(self)
     recvmsgs_default = lambda self: nl_recvmsgs_default(self)
     send_auto_complete = lambda self, msg: nl_send_auto_complete(self, msg)
     get_fd = lambda self: nl_socket_get_fd(self)
+
+    def connect(self):
+        proto = self._protocol
+        if proto is None:
+            raise RuntimeError('You sohuld specify protocol for this socket (in constructor) or choose another socket class')
+        nl_connect(self, proto)
 
     def modify_cb(self, type_, kind, func):
         """ expect function without parameters. Use closure to make usage of additional data """
@@ -137,10 +142,9 @@ class Socket(object):
             self._need_free = False
 
     def __enter__(self):
-        proto = self._protocol
-        if proto is None:
-            raise Exception('Unknown protocol, so can not connect automagically')
-        self.connect(proto)
+        if self.get_fd() != -1:
+            raise RuntimeError('Socket already connected')
+        self.connect()
         return self
 
     #noinspection PyUnusedLocal

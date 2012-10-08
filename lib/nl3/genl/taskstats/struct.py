@@ -1,0 +1,69 @@
+# coding=utf-8
+
+from ctypes import c_uint16, c_uint32, c_uint8, c_uint64, c_char, Structure
+
+TS_COMM_LEN = 32
+
+#include <linux/taskstats.h> wrapper
+#noinspection PyClassicStyleClass
+class Taskstats_version_1(Structure):
+    TASKSTATS_VERSION = 1
+
+    #noinspection PyTypeChecker
+    _fields_ = [
+        ('version', c_uint16),
+        ('ac_exitcode', c_uint32),
+        ('ac_flag', c_uint8),
+        ('ac_nice', c_uint8),
+        ('_trash', c_uint8 * 6), # implementtion of next:
+        ('cpu_count', c_uint64), # __attribute__((aligned(8)))
+        ('cpu_delay_total', c_uint64),
+        ('blkio_count', c_uint64),
+        ('blkio_delay_total', c_uint64),
+        ('swapin_count', c_uint64),
+        ('swapin_delay_total', c_uint64),
+        ('cpu_run_real_total', c_uint64),
+        ('cpu_run_virtual_total', c_uint64),
+        # version 1 ends here
+        ('ac_comm', c_char * TS_COMM_LEN),
+    ]
+
+    #################### version 1 ended here
+    #        char    ac_comm[TS_COMM_LEN]
+    #        __u8    ac_sched __attribute__((aligned(8)))
+    #        __u8    ac_pad[3]
+    #        __u32   ac_uid __attribute__((aligned(8)))
+    #        __u32   ac_gid
+    #        __u32   ac_pid
+    #        __u32   ac_ppid
+    #        __u32   ac_btime
+    #        __u64   ac_etime __attribute__((aligned(8)))
+    #        __u64   ac_utime
+    #        __u64   ac_stime
+    #        __u64   ac_minflt
+    #        __u64   ac_majflt
+    #        __u64   coremem
+    #        __u64   virtmem
+    #        __u64   hiwater_rss
+    #        __u64   hiwater_vm
+    #        __u64   read_char
+    #        __u64   write_char
+    #        __u64   read_syscalls
+    #        __u64   write_syscalls
+    #        __u64   read_bytes
+    #        __u64   write_bytes
+    #        __u64   cancelled_write_bytes
+    #        __u64  nvcsw
+    #        __u64  nivcsw
+    #        __u64   ac_utimescaled
+    #        __u64   ac_stimescaled
+    #        __u64   cpu_scaled_run_real_total
+    #        __u64   freepages_count
+    #        __u64   freepages_delay_total
+    #    ]
+
+    def dump(self):
+        for (name, _type) in self._fields_:
+            if not name.startswith('_'):
+                print '{0}={1}'.format(name, getattr(self, name))
+
