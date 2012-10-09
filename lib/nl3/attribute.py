@@ -2,8 +2,6 @@
 # coding: utf-8
 
 from __future__ import absolute_import
-
-from ctypes import byref, c_int
 from ..ctypes.libnl3 import *
 
 class Attribute(object):
@@ -21,10 +19,9 @@ class Attribute(object):
     u64 = property(nla_get_u64)
 
     def next(self, remainig):
-        rem = c_int(remainig)
         # never return NULL
-        x = nla_next(self, byref(rem))
-        return (Attribute(ptr=x, parent=self._parent), rem.value)
+        (attr, remainig) = nla_next(self, remainig)
+        return (Attribute(ptr=attr, parent=self._parent), remainig)
 
     def attributes(self):
         attr = Attribute(ptr=self.data(), parent=self._parent)

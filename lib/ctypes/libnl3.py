@@ -74,7 +74,15 @@ def wrap_ret_last_dbl_ptr(original):
 def nla_ok(nla, remainig):
     """ int nla_ok(const struct nlattr *nla, int remaining) """
 
+def wrap_nla_next(original):
+    def fun(nla, remainig):
+        rem = c_int(remainig)
+        next = original(nla, rem)
+        return (next, rem.value)
+    return fun
+
 #noinspection PyUnusedLocal
+@wrap_nla_next
 @wrap_ptr_no_check(nl, c_nlattr_p, c_nlattr_p)
 def nla_next(nla, remainig):
     """  struct nlattr *nla_next(const struct nlattr *nla, int *remaining) """

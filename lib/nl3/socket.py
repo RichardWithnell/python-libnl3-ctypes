@@ -31,7 +31,7 @@ class Socket(object):
         proto = self._protocol
         if proto is None:
             raise RuntimeError(
-                'You sohuld specify protocol for this socket (in constructor) or choose another socket class')
+                'You should specify protocol for this socket (in constructor) or choose another socket class')
         nl_connect(self, proto)
 
     def modify_cb(self, type_, kind, func):
@@ -51,7 +51,7 @@ class Socket(object):
 
         callback = nl_recvmsg_msg_cb_t(c_callback)
         ret = nl_socket_modify_cb(self, type_, kind, callback, None)
-        self.__cb_storage[(type, kind)] = callback # prevent from callback garbage collection.
+        self.__cb_storage[(type_, kind)] = callback # prevent from callback garbage collection.
         return ret
 
     fileno = get_fd

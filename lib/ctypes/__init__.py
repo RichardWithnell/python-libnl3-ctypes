@@ -71,7 +71,7 @@ class NullPointerException(Exception):
 
 
 def nullptr_check(result, func, args):
-    if result == 0:
+    if not result:
         raise NullPointerException('NULL pointer in result', result, func, args)
     return result
 
