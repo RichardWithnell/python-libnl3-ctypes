@@ -3,49 +3,8 @@
 
 from __future__ import absolute_import
 
-from ctypes import byref, c_void_p, c_uint32, c_int, c_uint64
-from ..import  wrap_int, wrap_ptr_no_check, wrap_custom
-from .import nl
-#########################
-c_nlattr_p = c_void_p
-
-#noinspection PyUnusedLocal
-@wrap_int(nl, c_nlattr_p, c_int)
-def nla_ok(nla, remainig):
-    """ int nla_ok(const struct nlattr *nla, int remaining) """
-
-#noinspection PyUnusedLocal
-@wrap_ptr_no_check(nl, c_nlattr_p, c_nlattr_p)
-def nla_next(nla, remainig):
-    """  struct nlattr *nla_next(const struct nlattr *nla, int *remaining) """
-
-#    return Attribute(result, self.msghdr_ptr)
-
-#noinspection PyUnusedLocal
-@wrap_ptr_no_check(nl, c_nlattr_p)
-def nla_data(nla):
-    """void* nla_data(const struct nlattr * nla)"""
-
-#noinspection PyUnusedLocal
-@wrap_int(nl, c_nlattr_p)
-def nla_type(nla):
-    """int nla_type(const struct nlattr * nla)"""
-
-#noinspection PyUnusedLocal
-@wrap_int(nl, c_nlattr_p)
-def nla_len(nla):
-    """int nla_len(const struct nlattr * nla)"""
-
-#noinspection PyUnusedLocal
-@wrap_custom(nl, c_uint32, c_nlattr_p)
-def nla_get_u32(nla):
-    """ uint32_t nla_get_u32(struct nlattr * nla) """
-
-#noinspection PyUnusedLocal
-@wrap_custom(nl, c_uint64, c_nlattr_p)
-def nla_get_u64(nla):
-    """ uint64_t nla_get_u64(struct nlattr * nla) """
-
+from ctypes import byref, c_int
+from ..ctypes.libnl3 import *
 
 class Attribute(object):
     def __init__(self, ptr=None, parent=None):

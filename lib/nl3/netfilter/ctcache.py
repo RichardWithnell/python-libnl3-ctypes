@@ -2,21 +2,10 @@
 #coding: utf-8
 from __future__ import absolute_import
 
-from ctypes import  POINTER, byref, c_void_p
-
-from ..import  wrap_nl_err
+from ctypes import   byref
+from ...ctypes.libnl3_nf import *
 from ..cache import NlCache
 from .ct import Ct
-from .import nfnl
-
-c_nl_sock_p = c_void_p
-c_nl_cache_p = c_void_p
-
-#noinspection PyUnusedLocal
-@wrap_nl_err(nfnl, c_nl_sock_p, POINTER(c_nl_cache_p))
-def nfnl_ct_alloc_cache(sock, cache_p):
-    """nfl_alloc_cache(struct nl_sock *, struct nl_cache **);"""
-
 
 class NfNlCtCache(NlCache):
     _objclass = Ct

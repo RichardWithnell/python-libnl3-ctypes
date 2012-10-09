@@ -5,7 +5,7 @@
 from _ctypes import sizeof
 
 import select
-from lib.nl3.genl.taskstats import TASKSTATS_TYPE_PID, TASKSTATS_TYPE_TGID, TASKSTATS_TYPE_STATS, TASKSTATS_TYPE_AGGR_PID, TASKSTATS_TYPE_AGGR_TGID
+from lib.ctypes.taskstats import *
 from lib.nl3.genl.taskstats.struct import Taskstats_version_1
 from lib.nl3.genl.taskstats.socket import Socket
 from lib.nl3.socket import NL_CB_VALID, NL_CB_CUSTOM

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #coding: utf-8
+from lib.ctypes import ipset
 
-from lib.nl3.netfilter import ipset
 from lib.nl3.netfilter.socket import Socket
 from lib.nl3.netfilter.message import Message
 

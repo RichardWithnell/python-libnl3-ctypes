@@ -2,31 +2,7 @@
 #coding: utf-8
 
 from __future__ import absolute_import
-
-from ctypes import c_void_p, c_uint32, c_uint
-from .import genl
-from ....import wrap_ptr, wrap_void, wrap_custom
-
-c_genl_family_p = c_void_p
-
-@wrap_ptr(genl)
-def genl_family_alloc():
-    """ struct genl_family* genl_family_alloc(void )"""
-
-#noinspection PyUnusedLocal
-@wrap_void(genl, c_genl_family_p)
-def genl_family_put(family):
-    """ void genl_family_put(struct genl_family * family) """
-
-#noinspection PyUnusedLocal
-@wrap_custom(genl, c_uint32, c_genl_family_p)
-def genl_family_get_hdrsize(family):
-    """ uint32_t genl_family_get_hdrsize(struct genl_family * family) """
-
-#noinspection PyUnusedLocal
-@wrap_custom(genl, c_uint, c_genl_family_p)
-def genl_family_get_id(family):
-    """unsigned int genl_family_get_id(struct genl_family * family)"""
+from ....ctypes.libnl3_genl import *
 
 
 class Family(object):

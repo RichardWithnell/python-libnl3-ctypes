@@ -2,32 +2,11 @@
 #coding: utf-8
 from __future__ import absolute_import
 
-from ctypes import c_int, c_char_p, POINTER, byref, c_void_p
-from ....import wrap_ptr
-from ...import wrap_nl_err
+from ctypes import   byref
+from ....ctypes.libnl3_genl import *
 from ...cache import NlCache
 from ..socket import Socket
-from .import genl
 from .genl_family import Family
-
-c_nl_sock_p = c_void_p
-c_nl_cache_p = c_void_p
-
-
-#noinspection PyUnusedLocal
-@wrap_nl_err(genl, c_nl_sock_p, POINTER(c_nl_cache_p))
-def genl_ctrl_alloc_cache(sock, presult):
-    """ int genl_ctrl_alloc_cache(struct nl_sock *sk, struct nl_cache **result) """
-
-#noinspection PyUnusedLocal
-@wrap_ptr(genl, c_nl_cache_p, c_int)
-def genl_ctrl_search(cache, id):
-    """ struct genl_family *genl_ctrl_search(struct nl_cache *, int id); """
-
-#noinspection PyUnusedLocal
-@wrap_ptr(genl, c_nl_cache_p, c_char_p)
-def genl_ctrl_search_by_name(cache, name):
-    """  struct genl_family *genl_ctrl_search_by_name(struct nl_cache *cache, const char *name) """
 
 #TODO: _obj_class = Family ?
 class CtrlCache(NlCache):

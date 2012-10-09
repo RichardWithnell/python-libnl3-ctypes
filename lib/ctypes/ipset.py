@@ -2,7 +2,7 @@
 #coding: utf-8
 from __future__ import absolute_import
 
-from ..import NLM_F_ACK, NLM_F_ROOT, NLM_F_MATCH, NLM_F_DUMP
+from .libnl3 import *
 
 # mnl.h
 NFNL_SUBSYS_IPSET = 6

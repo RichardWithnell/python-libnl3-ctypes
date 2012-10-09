@@ -3,16 +3,7 @@
 
 from __future__ import absolute_import
 
-from .import nl
-from ..import wrap_ptr_no_check
-from ctypes import c_void_p
-
-c_nl_object_p = c_void_p
-
-#noinspection PyUnusedLocal
-@wrap_ptr_no_check(nl, c_nl_object_p)
-def nl_cache_get_next(obj):
-    """ struct nl_object *nl_cache_get_next(struct nl_object *obj) """
+from ..ctypes.libnl3 import nl_cache_get_next
 
 
 class NlObject(object):

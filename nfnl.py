@@ -1,8 +1,8 @@
 #!/usr/bin/python
 #coding: utf-8
 
+from lib.ctypes.libnl3_nf import NETLINK_NETFILTER
 from lib.nl3.netfilter.ctcache import NfNlCtCache
-from lib.nl3.netfilter import NETLINK_NETFILTER
 from lib.nl3.cachemgr import CacheMgr
 
 def main():

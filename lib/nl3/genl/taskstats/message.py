@@ -3,11 +3,11 @@
 
 from __future__ import absolute_import
 
-from ...import NL_AUTO_PORT, NL_AUTO_SEQ
+from ....ctypes.libnl3 import *
+from ....ctypes.taskstats import *
 from ..message import Message as _Message
 from ..ctrl.controller import CtrlCache
 from .util import get_all_cpus
-from .import TASKSTATS_GENL_VERSION, TASKSTATS_CMD_GET, TASKSTATS_CMD_ATTR_REGISTER_CPUMASK, TASKSTATS_GENL_NAME
 
 
 def _resolve_family():

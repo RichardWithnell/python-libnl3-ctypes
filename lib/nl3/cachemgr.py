@@ -4,45 +4,11 @@
 from __future__ import absolute_import
 
 import traceback
-from ctypes import c_void_p, c_char_p, c_int, POINTER, CFUNCTYPE, byref
-from ..import wrap_void
-from .import nl, wrap_nl_err
+from ctypes import  byref
+
+from ..ctypes.libnl3 import *
 from .socket import Socket
 
-NL_AUTO_PROVIDE = 1
-
-c_nl_cache_mngr_p = c_void_p
-c_nl_object_p = c_void_p
-c_nl_cache_p = c_void_p
-c_nl_sock_p = c_void_p
-
-#noinspection PyUnusedLocal
-@wrap_nl_err(nl, c_nl_sock_p, c_int, c_int, POINTER(c_nl_cache_mngr_p))
-def nl_cache_mngr_alloc(sock, protocol, flags, presult):
-    """
-    int nl_cache_mngr_alloc(struct nl_sock * sk,
-    int protocol,
-    int flags,
-    struct nl_cache_mngr ** result
-    )"""
-
-#noinspection PyUnusedLocal
-@wrap_void(nl, c_nl_cache_mngr_p)
-def nl_cache_mngr_free(mngr):
-    """void nl_cache_mngr_free(struct nl_cache_mngr * mngr)"""
-
-# typedef void (*change_func_t)(struct nl_cache *, struct nl_object *, int, void *);
-change_func_t = CFUNCTYPE(None, c_nl_cache_p, c_nl_object_p, c_void_p)
-
-#noinspection PyUnusedLocal
-@wrap_nl_err(nl, c_nl_cache_mngr_p, c_char_p, change_func_t, c_void_p, POINTER(c_nl_cache_p))
-def nl_cache_mngr_add(mngr, name, callback, data, result):
-    """int nl_cache_mngr_add(struct nl_cache_mngr * mngr,
-    const char * name,
-    change_func_t cb,
-    void * data,
-    struct nl_cache ** result
-    )"""
 
 #TODO: override __new__ to return same instance if same pointer value returned.
 #Also, FILE(libc.stdin) should not generate new instance...
