@@ -2,7 +2,7 @@
 #coding: utf-8
 
 from __future__ import absolute_import
-from ctypes import c_int, c_void_p, c_uint32, c_uint64, CFUNCTYPE, c_size_t, c_uint8, c_uint16, POINTER
+from ctypes import c_int, c_void_p, c_uint32, c_uint64, CFUNCTYPE, c_size_t, c_uint8, c_uint16, POINTER, byref
 from .import *
 
 nl = MYDLL('libnl-3.so.200')
@@ -33,7 +33,6 @@ c_nl_cache_mngr_p = c_void_p
 c_nl_object_p = c_void_p
 c_nl_cache_p = c_void_p
 c_nl_sock_p = c_void_p
-c_nl_object_p = c_void_p
 
 c_nlmsghdr_p = c_void_p
 c_nlattr_p = c_void_p
@@ -56,6 +55,17 @@ def errcode_check(result, func, args):
 
 def wrap_nl_err(*args):
     return lambda original: common_loader(original, errcode_check, c_int, *args)
+
+
+def wrap_ret_last_dbl_ptr(original):
+    def fun(*args):
+        ret = c_void_p()
+        new_args = args + (byref(ret),)
+        print new_args
+        original(*new_args)
+        return ret
+
+    return fun
 
 #############################################################################
 
@@ -109,8 +119,9 @@ def nl_cache_get_first(cache):
 ######################################################################################
 
 #noinspection PyUnusedLocal
+@wrap_ret_last_dbl_ptr
 @wrap_nl_err(nl, c_nl_sock_p, c_int, c_int, POINTER(c_nl_cache_mngr_p))
-def nl_cache_mngr_alloc(sock, protocol, flags, presult):
+def nl_cache_mngr_alloc(sock, protocol, flags):
     """
     int nl_cache_mngr_alloc(struct nl_sock * sk,
     int protocol,
@@ -127,8 +138,9 @@ def nl_cache_mngr_free(mngr):
 change_func_t = CFUNCTYPE(None, c_nl_cache_p, c_nl_object_p, c_void_p)
 
 #noinspection PyUnusedLocal
+@wrap_ret_last_dbl_ptr
 @wrap_nl_err(nl, c_nl_cache_mngr_p, c_char_p, change_func_t, c_void_p, POINTER(c_nl_cache_p))
-def nl_cache_mngr_add(mngr, name, callback, data, result):
+def nl_cache_mngr_add(mngr, name, callback, data):
     """int nl_cache_mngr_add(struct nl_cache_mngr * mngr,
     const char * name,
     change_func_t cb,

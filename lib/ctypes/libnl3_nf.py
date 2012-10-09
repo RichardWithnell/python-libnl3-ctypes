@@ -5,7 +5,7 @@ from __future__ import absolute_import
 
 from ctypes import c_void_p, c_int, c_uint64, c_uint8, c_uint16, POINTER
 from .import MYDLL, wrap_int, wrap_custom, wrap_ptr
-from .libnl3 import wrap_nl_err
+from .libnl3 import wrap_nl_err, wrap_ret_last_dbl_ptr
 
 NETLINK_NETFILTER = 12
 
@@ -39,8 +39,9 @@ def nfnl_ct_get_bytes(ct, direction):
 
 
 #noinspection PyUnusedLocal
+@wrap_ret_last_dbl_ptr
 @wrap_nl_err(nfnl, c_nl_sock_p, POINTER(c_nl_cache_p))
-def nfnl_ct_alloc_cache(sock, cache_p):
+def nfnl_ct_alloc_cache(sock):
     """nfl_alloc_cache(struct nl_sock *, struct nl_cache **);"""
 
 

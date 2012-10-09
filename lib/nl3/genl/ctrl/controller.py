@@ -2,7 +2,6 @@
 #coding: utf-8
 from __future__ import absolute_import
 
-from ctypes import   byref
 from ....ctypes.libnl3_genl import *
 from ...cache import NlCache
 from ..socket import Socket
@@ -23,9 +22,8 @@ class CtrlCache(NlCache):
             if sock.get_fd() == -1:
                 raise RuntimeError('cache expect connected socket')
 
-        xxx = c_nl_cache_p()
-        genl_ctrl_alloc_cache(sock, byref(xxx))
-        super(CtrlCache, self).__init__(xxx, None)
+        xxx = genl_ctrl_alloc_cache(sock)
+        super(CtrlCache, self).__init__(ptr=xxx)
         self._sock = sock # prevent from garbage collecting
         self._need_free = True
 

@@ -26,7 +26,7 @@ class NlCache(object):
 
     def get_first(self):
         obj = nl_cache_get_first(self)
-        if obj == 0:
+        if not obj:
             raise StopIteration()
         return self._objclass(ptr=obj, parent=self)
 

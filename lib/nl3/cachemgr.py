@@ -4,7 +4,6 @@
 from __future__ import absolute_import
 
 import traceback
-from ctypes import  byref
 
 from ..ctypes.libnl3 import *
 from .socket import Socket
@@ -25,9 +24,7 @@ class CacheMgr(object):
 
         self.__sock = sock # prevent from socket garbage collection
 
-        cache = c_nl_cache_mngr_p()
-        nl_cache_mngr_alloc(sock, protocol, flags, byref(cache))
-        self._as_parameter_ = cache
+        self._as_parameter_ = nl_cache_mngr_alloc(sock, protocol, flags)
         self._need_free = True
 
     def _free(self):
@@ -56,8 +53,10 @@ class CacheMgr(object):
         if hasattr(cls, 'on_change'):
             cb = change_func_t(c_callback)
         else:
-            cb = None
-        xxx = c_nl_cache_p()
-        nl_cache_mngr_add(self, cls._cache_name, cb, None, byref(xxx))
-        cache_instance = cls(xxx)
+            cb = change_func_t(0)
+
+        xxx = nl_cache_mngr_add(self, cls._cache_name, cb, None)
+
+        cache_instance = cls(ptr=xxx)
+        cache_instance._cb = cb # prevent from garbage collecting
         return cache_instance

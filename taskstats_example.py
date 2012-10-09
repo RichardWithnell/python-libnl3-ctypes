@@ -7,7 +7,7 @@ from _ctypes import sizeof
 import select
 from lib.ctypes.taskstats import *
 from lib.nl3.genl.taskstats.struct import Taskstats_version_1
-from lib.nl3.genl.taskstats.socket import Socket
+from lib.nl3.genl.taskstats.socket import SocketTS
 from lib.nl3.socket import NL_CB_VALID, NL_CB_CUSTOM
 
 class Application(object):
@@ -48,7 +48,7 @@ class Application(object):
             print '-' * 80
 
     def do_poll(self):
-        with Socket() as sock:
+        with SocketTS() as sock:
             sock.register_cpumask()
             sock.modify_cb(NL_CB_VALID, NL_CB_CUSTOM, self._callback)
 

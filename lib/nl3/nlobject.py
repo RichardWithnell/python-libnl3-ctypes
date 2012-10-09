@@ -16,6 +16,6 @@ class NlObject(object):
 
     def get_next(self):
         next = nl_cache_get_next(self)
-        if next == 0:
+        if not next:
             raise StopIteration()
         return self.__class__(ptr=next, parent=self._parent)

@@ -2,7 +2,6 @@
 #coding: utf-8
 from __future__ import absolute_import
 
-from ctypes import   byref
 from ...ctypes.libnl3_nf import *
 from ..cache import NlCache
 from .ct import Ct
@@ -17,7 +16,7 @@ class NfNlCtCache(NlCache):
             return
         if sock is None:
             raise ValueError('sock is None')
-        xxx = c_nl_cache_p()
-        nfnl_ct_alloc_cache(sock, byref(xxx))
-        super(NfNlCtCache, self).__init__(ptr=ptr)
+
+        xxx = nfnl_ct_alloc_cache(sock)
+        super(NfNlCtCache, self).__init__(ptr=xxx)
         self._need_free = True

@@ -14,4 +14,4 @@ class MessageGENL(Message):
     #noinspection PyMethodOverriding
     def put(self, port, seq, flags, cmd):
         genhdr = self._NlMsgHdr_class._GenlMsgHdr_class
-        genlmsg_put(self, port, seq, genhdr._family_id, genhdr._family_hdrlen, flags, cmd, genhdr._family_hdrlen._version)
+        genlmsg_put(self, port, seq, genhdr._family_id, genhdr._family_hdrlen, flags, cmd, genhdr._version)

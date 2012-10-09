@@ -24,7 +24,7 @@ class Attribute(object):
         rem = c_int(remainig)
         # never return NULL
         x = nla_next(self, byref(rem))
-        return (Attribute(ptr=x, parent=self._parent), rem)
+        return (Attribute(ptr=x, parent=self._parent), rem.value)
 
     def attributes(self):
         attr = Attribute(ptr=self.data(), parent=self._parent)

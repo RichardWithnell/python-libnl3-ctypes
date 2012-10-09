@@ -6,8 +6,8 @@ from __future__ import absolute_import
 from ....ctypes.libnl3 import *
 from ....ctypes.taskstats import *
 from ..import resolve_family
-from ..genl_msghdr import GenlMsgHdr as GenlMsgHdr
-from ..nlmsghdr import NlMsgHdr
+from ..genl_msghdr import GenlMsgHdr
+from ..nlmsghdr import NlMsgHdrGENL
 from ..message import MessageGENL
 from .util import get_all_cpus
 
@@ -20,7 +20,7 @@ class GenlMsgHdrTS(GenlMsgHdr):
 (GenlMsgHdrTS._family_id, GenlMsgHdrTS._family_hdrlen) = resolve_family(TASKSTATS_GENL_NAME)
 
 
-class NlMsgHdrTS(NlMsgHdr):
+class NlMsgHdrTS(NlMsgHdrGENL):
     _GenlMsgHdr_class = GenlMsgHdrTS
 
 
