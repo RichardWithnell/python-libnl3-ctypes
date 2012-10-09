@@ -4,12 +4,14 @@
 from __future__ import absolute_import
 
 from ...ctypes.libnl3_genl import genlmsg_put
-from ..message import Message as _Message
-from .nlmsghdr import NlMsgHdr
+from ..message import Message
+from .nlmsghdr import NlMsgHdrGENL
 
 
-class Message(_Message):
-    _NlMsgHdr_class = NlMsgHdr
+class MessageGENL(Message):
+    _NlMsgHdr_class = NlMsgHdrGENL
 
-    put = lambda self, port, seq, family, hdrlen, flags, cmd, version: genlmsg_put(self, port, seq, family, hdrlen,
-        flags, cmd, version)
+    #noinspection PyMethodOverriding
+    def put(self, port, seq, flags, cmd):
+        genhdr = self._NlMsgHdr_class._GenlMsgHdr_class
+        genlmsg_put(self, port, seq, genhdr._family_id, genhdr._family_hdrlen, flags, cmd, genhdr._family_hdrlen._version)

@@ -8,7 +8,10 @@ from ...ctypes.libnl3_genl import *
 from ..attribute import Attribute
 
 class GenlMsgHdr(object):
-    _hdrlen = 0
+    # TODO: this is abstract class
+    _family_hdrlen = None
+    _family_id = None
+    _version = None
 
     def __init__(self, ptr, parent):
         if ptr is not None:
@@ -20,10 +23,10 @@ class GenlMsgHdr(object):
     data = lambda self: genlmsg_data(self)
 
     def attrdata(self):
-        ptr = genlmsg_attrdata(self, self._hdrlen)
+        ptr = genlmsg_attrdata(self, self._family_hdrlen)
         return Attribute(ptr=ptr, parent=self)
 
-    attrlen = lambda self: genlmsg_attrlen(self, self._hdrlen)
+    attrlen = lambda self: genlmsg_attrlen(self, self._family_hdrlen)
 
     def __iter__(self):
         rem = self.attrlen()

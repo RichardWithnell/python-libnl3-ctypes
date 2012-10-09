@@ -5,21 +5,27 @@ from __future__ import absolute_import
 
 from ....ctypes.libnl3 import *
 from ....ctypes.taskstats import *
-from ..message import Message as _Message
-from ..ctrl.controller import CtrlCache
+from ..import resolve_family
+from ..genl_msghdr import GenlMsgHdr as GenlMsgHdr
+from ..nlmsghdr import NlMsgHdr
+from ..message import MessageGENL
 from .util import get_all_cpus
 
+class GenlMsgHdrTS(GenlMsgHdr):
+    _family_hdrlen = None
+    _family_id = None
+    _version = TASKSTATS_GENL_VERSION
 
-def _resolve_family():
-    family = CtrlCache().search_by_name(TASKSTATS_GENL_NAME)
-    return (family.id, family.hdrsize)
+#TODO: if kernel have different version log this
+(GenlMsgHdrTS._family_id, GenlMsgHdrTS._family_hdrlen) = resolve_family(TASKSTATS_GENL_NAME)
 
-(family_id, family_hdrsize) = _resolve_family()
 
-class Message(_Message):
-    #noinspection PyMethodOverriding
-    def put(self, port, seq, flags, cmd):
-        return super(Message, self).put(port, seq, family_id, family_hdrsize, flags, cmd, TASKSTATS_GENL_VERSION)
+class NlMsgHdrTS(NlMsgHdr):
+    _GenlMsgHdr_class = GenlMsgHdrTS
+
+
+class MessageTS(MessageGENL):
+    _NlMsgHdr_class = NlMsgHdrTS
 
     def put_register_cpumask(self, cpumask=None):
         if cpumask is None:

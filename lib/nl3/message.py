@@ -10,13 +10,13 @@ from .nlmsghdr import NlMsgHdr
 class Message(object):
     _NlMsgHdr_class = NlMsgHdr
 
-    def __init__(self, ptr=None, parent=None, msgtype=None, flags=None):
+    def __init__(self, ptr=None, parent=None, msgtype=None, flags=0):
         self._need_free = False
         if ptr is not None:
             self._as_parameter_ = ptr
             self._parent = parent
         else:
-            if msgtype is not None and flags is not None:
+            if msgtype is not None:
                 self._as_parameter_ = nlmsg_alloc_simple(msgtype, flags)
             else:
                 self._as_parameter_ = nlmsg_alloc()

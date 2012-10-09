@@ -4,10 +4,10 @@
 from __future__ import absolute_import
 
 from ..socket import Socket as Socket_
-from .message import Message
+from .message import MessageTS
 
 class Socket(Socket_):
-    _message_class = Message
+    _message_class = MessageTS
 
     def register_cpumask(self, cpumask=None):
         msg = self._message_class()
