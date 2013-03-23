@@ -4,6 +4,7 @@
 from __future__ import absolute_import
 from ..ctypes.libnl3 import *
 
+
 class Attribute(object):
     def __init__(self, ptr=None, parent=None):
         self._parent = parent

@@ -36,7 +36,6 @@ class CacheMgr(object):
             self._free()
             self._need_free = False
 
-
     # TODO: def add(self, name, cacheclass) ? instead of callback, call self.on_change(object). So, user should
     # TODO: create class(genl.taskstats_cache). we will get class._name to pass to C API
     def add(self, cls):

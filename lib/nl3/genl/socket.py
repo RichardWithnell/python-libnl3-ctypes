@@ -7,6 +7,7 @@ from ...ctypes.libnl3_genl import *
 from ..socket import Socket as _Socket
 from .message import Message
 
+
 class Socket(_Socket):
     _message_class = Message
     _protocol = NETLINK_GENERIC

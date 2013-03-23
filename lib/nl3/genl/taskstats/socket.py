@@ -6,6 +6,7 @@ from __future__ import absolute_import
 from ..socket import Socket
 from .message import MessageTS
 
+
 class SocketTS(Socket):
     _message_class = MessageTS
 

@@ -7,6 +7,7 @@ from ..ctypes.libnl3 import *
 from ..libc import FILE
 from .nlmsghdr import NlMsgHdr
 
+
 class Message(object):
     _NlMsgHdr_class = NlMsgHdr
 

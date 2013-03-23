@@ -16,8 +16,10 @@ from ctypes import CDLL, c_void_p, c_char_p, c_int
 #        #noinspection PyArgumentList
 #        super(MYDLL, self).__init__(*args, **kwargs)
 #        self._FuncPtr.__repr__ = _ctypes_func_repr
+from functools import wraps
 
 MYDLL = CDLL
+
 
 # USE _findSoname_ldconfig instead of find_library to guess library name
 # from ctypes.util import _findSoname_ldconfig
@@ -27,7 +29,6 @@ MYDLL = CDLL
 #        raise RuntimeError('Library {!r} not found'.format(name))
 #    log.info('Found ctypes library %r by name %r', result, name)
 #    return result
-
 def profile_that(result, func_name, lib_name):
     result2 = lambda *args: result(*args)
     codeobj = result2.func_code
@@ -54,16 +55,16 @@ def profile_that(result, func_name, lib_name):
 
 
 def common_loader(original, errcheck, restype, library, *argtypes):
-    #print 'Defining {0} {1}({2})'.format(restype.__name__ if restype is not None else 'void', original.func_name, ', '.join((i.__name__ for i in argtypes)))
+    #print 'Defining {0} {1}({2})'.format(restype.__name__ if restype is not None else 'void',
+    # original.func_name, ', '.join((i.__name__ for i in argtypes)))
     func_name = original.func_name
     result = getattr(library, func_name)
     if errcheck is not None:
         result.errcheck = errcheck
     result.restype = restype
     result.argtypes = argtypes
-    result.__doc__ = original.__doc__
     #return profile_that(result, func_name, library._name)
-    return result
+    return wraps(original)(result)
 
 
 class NullPointerException(Exception):
@@ -77,27 +78,46 @@ def nullptr_check(result, func, args):
 
 
 def wrap_ptr(*args):
+    """
+    Decorator that checks that returned pointer is not null
+    """
     return lambda original: common_loader(original, nullptr_check, c_void_p, *args)
 
 
 def wrap_ptr_no_check(*args):
+    """
+    Decorator that mark function as returning pointer, but do not check anything
+    """
     return lambda original: common_loader(original, None, c_void_p, *args)
 
 
 def wrap_char_ptr(*args):
+    """
+    Decorator that checks that returned char* pointer is not null
+    """
     return lambda original: common_loader(original, nullptr_check, c_char_p, *args)
 
 
 def wrap_char_ptr_no_check(*args):
+    """
+    Decorator that mark function as returning char* pointer, but do not check anything
+    """
     return lambda original: common_loader(original, None, c_char_p, *args)
 
 
 def wrap_void(*args):
+    """
+    Mark that function returns void
+    """
     return lambda original: common_loader(original, None, None, *args)
 
 
 def wrap_int(*args):
+    """
+    Mark that function returns integer
+    """
     return lambda original: common_loader(original, None, c_int, *args)
+
 
 # wrap custom types without check
 def wrap_custom(lib, custom, *args):

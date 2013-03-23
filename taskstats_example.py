@@ -10,6 +10,7 @@ from lib.nl3.genl.taskstats.struct import Taskstats_version_1
 from lib.nl3.genl.taskstats.socket import SocketTS
 from lib.nl3.socket import NL_CB_VALID, NL_CB_CUSTOM
 
+
 class Application(object):
     def _callback(self, message):
         nlhdr = message.hdr()
@@ -18,7 +19,7 @@ class Application(object):
         for attr in nlhdr.hdr():
             attr_type = attr.type()
 
-            if  attr_type not in (TASKSTATS_TYPE_AGGR_PID, TASKSTATS_TYPE_AGGR_TGID):
+            if attr_type not in (TASKSTATS_TYPE_AGGR_PID, TASKSTATS_TYPE_AGGR_TGID):
                 raise Exception('Nested (outer) attr is of invalid type', attr_type)
 
             for attr in attr.attributes():
@@ -37,7 +38,7 @@ class Application(object):
                     size = sizeof(Taskstats_version_1)
                     if length < size:
                         raise ValueError('Not enought data to build structure. Required at least %d, passed %d', size,
-                            length)
+                                         length)
                     data = attr.data()
                     #noinspection PyUnresolvedReferences
                     info = Taskstats_version_1.from_address(data)
@@ -63,6 +64,7 @@ class Application(object):
 
 def main():
     Application().do_poll()
+
 
 if __name__ == '__main__':
     main()

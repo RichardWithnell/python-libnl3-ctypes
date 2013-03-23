@@ -7,6 +7,7 @@ from __future__ import absolute_import
 from ...ctypes.libnl3_genl import *
 from ..attribute import Attribute
 
+
 class GenlMsgHdr(object):
     # TODO: this is abstract class
     _family_hdrlen = None

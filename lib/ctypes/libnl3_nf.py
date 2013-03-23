@@ -4,7 +4,7 @@
 from __future__ import absolute_import
 
 from ctypes import c_void_p, c_int, c_uint64, c_uint8, c_uint16, POINTER
-from .import MYDLL, wrap_int, wrap_custom, wrap_ptr
+from . import MYDLL, wrap_int, wrap_custom, wrap_ptr
 from .libnl3 import wrap_nl_err, wrap_ret_last_dbl_ptr
 
 NETLINK_NETFILTER = 12

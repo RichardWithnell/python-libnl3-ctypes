@@ -5,11 +5,12 @@ from __future__ import absolute_import
 
 from ....ctypes.libnl3 import *
 from ....ctypes.taskstats import *
-from ..import resolve_family
+from .. import resolve_family
 from ..genl_msghdr import GenlMsgHdr
 from ..nlmsghdr import NlMsgHdrGENL
 from ..message import MessageGENL
 from .util import get_all_cpus
+
 
 class GenlMsgHdrTS(GenlMsgHdr):
     _family_hdrlen = None

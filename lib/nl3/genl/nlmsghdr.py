@@ -7,6 +7,7 @@ from ...ctypes.libnl3_genl import *
 from ..nlmsghdr import NlMsgHdr
 from .genl_msghdr import GenlMsgHdr
 
+
 class NlMsgHdrGENL(NlMsgHdr):
     _GenlMsgHdr_class = GenlMsgHdr
 

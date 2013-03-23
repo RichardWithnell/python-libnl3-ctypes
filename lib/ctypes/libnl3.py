@@ -3,7 +3,10 @@
 
 from __future__ import absolute_import
 from ctypes import c_int, c_void_p, c_uint32, c_uint64, CFUNCTYPE, c_size_t, c_uint8, c_uint16, POINTER, byref
-from .import *
+from functools import wraps
+
+from . import *
+
 
 nl = MYDLL('libnl-3.so.200')
 
@@ -58,10 +61,10 @@ def wrap_nl_err(*args):
 
 
 def wrap_ret_last_dbl_ptr(original):
+    @wraps(original)
     def fun(*args):
         ret = c_void_p()
         new_args = args + (byref(ret),)
-        print new_args
         original(*new_args)
         return ret
 
@@ -74,11 +77,14 @@ def wrap_ret_last_dbl_ptr(original):
 def nla_ok(nla, remainig):
     """ int nla_ok(const struct nlattr *nla, int remaining) """
 
+
 def wrap_nla_next(original):
+    @wraps(original)
     def fun(nla, remainig):
         rem = c_int(remainig)
         next = original(nla, rem)
         return (next, rem.value)
+
     return fun
 
 #noinspection PyUnusedLocal
