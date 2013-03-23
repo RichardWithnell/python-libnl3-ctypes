@@ -1,0 +1,91 @@
+req:	msg:	IPSET_CMD_PROTOCOL
+	attr:	uint8  IPSET_ATTR_PROTOCOL
+
+resp:	attr:	uint8  IPSET_ATTR_PROTOCOL	(protocol max)
+		uint8  IPSET_ATTR_PROTOCOL_MIN	(protocol min, optional)
+--------------------------------------
+req:	msg:	IPSET_CMD_CREATE
+	attr:	uint8  IPSET_ATTR_PROTOCOL
+		string IPSET_ATTR_SETNAME
+		string IPSET_ATTR_TYPENAME
+		uint8  IPSET_ATTR_REVISION
+		uint8  IPSET_ATTR_FAMILY
+		uint32 IPSET_ATTR_FLAGS
+		nested IPSET_ATTR_DATA
+			create-specific-data
+
+resp:	success/error
+--------------------------------------
+req:	msg:	IPSET_CMD_DESTROY|IPSET_CMD_FLUSH
+	attr:	uint8  IPSET_ATTR_PROTOCOL
+		string IPSET_ATTR_SETNAME	(optional)
+
+resp:	success/error
+--------------------------------------
+req:	msg:	IPSET_CMD_SWAP|IPSET_CMD_RENAME
+	attr:	uint8  IPSET_ATTR_PROTOCOL
+		string IPSET_ATTR_SETNAME
+		string IPSET_ATTR_SETNAME2
+
+resp:	success/error
+--------------------------------------
+req:	msg:	IPSET_CMD_LIST|SAVE
+	attr:	uint8  IPSET_ATTR_PROTOCOL
+		string IPSET_ATTR_SETNAME	(optional)
+
+resp:	attr:	string IPSET_ATTR_SETNAME
+		string IPSET_ATTR_TYPENAME
+		uint8  IPSET_ATTR_REVISION
+		uint8  IPSET_ATTR_FAMILY
+		nested IPSET_ATTR_DATA
+			create-specific-data
+		nested IPSET_ATTR_ADT
+			nested IPSET_ATTR_DATA
+				adt-specific-data
+			...
+--------------------------------------
+req:	msg:	IPSET_CMD_ADD|DEL
+	attr:	uint8  IPSET_ATTR_PROTOCOL
+		string IPSET_ATTR_SETNAME
+		uint32 IPSET_ATTR_FLAGS
+		uint32 IPSET_ATTR_LINENO	(for reporting error line back too)
+		nested IPSET_ATTR_DATA
+			adt-specific-data
+
+		or
+
+		nested IPSET_ATTR_ADT
+			nested IPSET_ATTR_DATA
+				adt-specific-data
+			...
+
+resp:	success/error
+--------------------------------------
+req:	msg:	IPSET_CMD_TEST
+	attr:	uint8  IPSET_ATTR_PROTOCOL
+		string IPSET_ATTR_SETNAME
+		uint32 IPSET_ATTR_FLAGS
+		nested IPSET_ATTR_DATA
+			adt-specific-data
+
+resp:	success/error
+--------------------------------------
+req:	msg:	IPSET_CMD_HEADER
+	attr:	uint8  IPSET_ATTR_PROTOCOL
+		string IPSET_ATTR_SETNAME
+
+resp:	attr:	string IPSET_ATTR_SETNAME
+		string IPSET_ATTR_TYPENAME
+		uint8  IPSET_ATTR_REVISION
+		uint8  IPSET_ATTR_FAMILY
+--------------------------------------
+req:	msg:	IPSET_CMD_TYPE
+	attr:	uint8  IPSET_ATTR_PROTOCOL
+		string IPSET_ATTR_TYPENAME
+		uint8  IPSET_ATTR_FAMILY
+
+resp:	attr:	string IPSET_ATTR_TYPENAME
+		uint8  IPSET_ATTR_FAMILY
+		uint8  IPSET_ATTR_REVISION	(version max)
+		uint8  IPSET_ATTR_REVISION_MIN	(version min, optional)
+--------------------------------------

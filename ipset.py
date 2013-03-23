@@ -10,7 +10,7 @@ AF_INET = 2
 def main():
     s = Socket()
     s.nfnl_connect()
-    s.nl_send_auto_complete(ipset.nfnl_ipset_build_list_request(AF_INET))
+    s.nl_send_auto_complete(ipset.nfnl_ipset_build_list_request(AF_INET, 'qwe'))
     s.nl_recvmsgs_default()
 
 if __name__ == '__main__':
