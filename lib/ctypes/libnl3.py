@@ -108,6 +108,19 @@ def nla_type(nla):
 def nla_len(nla):
     """int nla_len(const struct nlattr * nla)"""
 
+
+#noinspection PyUnusedLocal
+@wrap_custom(nl, c_uint8, c_nlattr_p)
+def nla_get_u8(nla):
+    """ uint8_t nla_get_u8(struct nlattr * nla) """
+
+
+#noinspection PyUnusedLocal
+@wrap_custom(nl, c_uint16, c_nlattr_p)
+def nla_get_u16(nla):
+    """ uint16_t nla_get_u16(struct nlattr * nla) """
+
+
 #noinspection PyUnusedLocal
 @wrap_custom(nl, c_uint32, c_nlattr_p)
 def nla_get_u32(nla):

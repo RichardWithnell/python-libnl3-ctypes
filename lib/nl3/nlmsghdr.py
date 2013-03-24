@@ -21,12 +21,18 @@ class NlMsgHdr(object):
     attrlen = lambda self, hdrlen: nlmsg_attrlen(self, hdrlen)
 
     def attrdata(self, hdrlen):
+        """
+        :type hdrlen: int
+        """
         attr = nlmsg_attrdata(self, hdrlen)
         return self._attr_class(ptr=attr, parent=self)
 
     def attributes(self, hdrlen):
         """
+        Yields of enclosed attributes
         #define nlmsg_for_each_attr in original .h file
+
+        :type hdrlen: int
         """
         pos = self.attrdata(hdrlen)
         rem = self.attrlen(hdrlen)
