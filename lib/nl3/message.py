@@ -3,10 +3,11 @@
 
 from __future__ import absolute_import
 
-from ..ctypes.libnl3 import *
+from lib.ctypes.libnl3.attr import nla_put_string, nla_put_u8, nla_put_u16, nla_put_u32
+from lib.ctypes.libnl3.msg import nlmsg_free, nlmsg_alloc, nlmsg_alloc_simple, nl_msg_dump, nlmsg_hdr, nlmsg_put, nlmsg_reserve
 from ..libc import FILE
 from .nlmsghdr import NlMsgHdr
-
+from contextlib import closing
 
 class Message(object):
     _NlMsgHdr_class = NlMsgHdr
@@ -28,11 +29,11 @@ class Message(object):
             return nl_msg_dump(self, target)
 
         if isinstance(target, (int, long)):
-            with FILE(fd=target, mode='w') as fileobj:
+            with closing(FILE(fd=target, mode='w')) as fileobj:
                 return nl_msg_dump(self, fileobj)
 
         if isinstance(target, basestring):
-            with FILE(filename=target, mode='w') as fileobj:
+            with closing(FILE(filename=target, mode='w')) as fileobj:
                 return nl_msg_dump(self, fileobj)
 
     def put(self, msg, pid, seq, type_, payload, flags):
@@ -43,17 +44,15 @@ class Message(object):
         ptr = nlmsg_hdr(self)
         return self._NlMsgHdr_class(ptr=ptr, parent=self)
 
-    reserve = lambda self, len, pad: nlmsg_reserve(self, len, pad)
+    reserve = lambda self, _len, pad: nlmsg_reserve(self, _len, pad)
     put_string = lambda self, attrtype, string: nla_put_string(self, attrtype, string)
     put_u8 = lambda self, attrtype, value: nla_put_u8(self, attrtype, value)
     put_u16 = lambda self, attrtype, value: nla_put_u16(self, attrtype, value)
     put_u32 = lambda self, attrtype, value: nla_put_u32(self, attrtype, value)
 
-
     def _free(self):
         nlmsg_free(self)
         del self._as_parameter_
-
 
     def __del__(self):
         if self._need_free:

@@ -3,7 +3,7 @@
 
 from __future__ import absolute_import
 
-from ..ctypes.libnl3 import *
+from lib.ctypes.libnl3.cache import nl_cache_get_first, nl_cache_free
 from .nlobject import NlObject
 
 
@@ -12,6 +12,8 @@ class NlCache(object):
 
     def __init__(self, ptr=None, parent=None):
         self._need_free = False
+        if ptr is None:
+            raise NotImplementedError('NlCache allocation is not implemented')
         self._as_parameter_ = ptr
         self._parent = parent
 
@@ -24,15 +26,16 @@ class NlCache(object):
             self._free()
             self._need_free = False
 
-    def get_first(self):
+    def _get_first(self):
+        """ Returns NlObject subclass """
         obj = nl_cache_get_first(self)
         if not obj:
             raise StopIteration()
         return self._objclass(ptr=obj, parent=self)
 
-
     def __iter__(self):
-        obj = self.get_first()
+        """ Yields objects in cache """
+        obj = self._get_first()
         yield obj
 
         while 1:

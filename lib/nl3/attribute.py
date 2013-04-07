@@ -2,7 +2,7 @@
 # coding: utf-8
 
 from __future__ import absolute_import
-from ..ctypes.libnl3 import *
+from lib.ctypes.libnl3.attr import nla_ok, nla_next, nla_data, nla_type, nla_len, nla_get_u8, nla_get_u16, nla_get_u32, nla_get_u64
 
 
 NLA_UNSPEC = 0  # /**< Unspecified type, binary data chunk */
@@ -24,36 +24,56 @@ class Attribute(object):
     #TODO: make them property
     ok = lambda self, length: bool(nla_ok(self, length))
     data = lambda self: nla_data(self)
-    len = lambda self: nla_len(self)
-    type = lambda self: nla_type(self)
+    len_ = lambda self: nla_len(self)
+    type_ = lambda self: nla_type(self)
 
-    u8 = property(nla_get_u8)
-    u16 = property(nla_get_u16)
-    u32 = property(nla_get_u32)
-    u64 = property(nla_get_u64)
+    _u8 = property(nla_get_u8)
+    _u16 = property(nla_get_u16)
+    _u32 = property(nla_get_u32)
+    _u64 = property(nla_get_u64)
 
     @property
     def value(self):
-        mytype = self.type
+        """
+        Python-only function. You should use only this function
+        instead of properties like ._u8  or ._u64
+
+        This is not as fast as in C, but less error prone
+        """
+        mytype = self.type_()
+
         if mytype == NLA_U8:
-            return self.u8
+            return self._u8
         if mytype == NLA_U16:
-            return self.u16
+            return self._u16
         if mytype == NLA_U32:
-            return self.u32
+            return self._u32
         if mytype == NLA_U64:
-            return self.u64
+            return self._u64
         raise NotImplementedError('Unknown my type', mytype)
 
     def next(self, remainig):
+        """
+        Returns next attribute in the chain of attributes
+        :rtype : (Attribute, int)
+        :type remainig: int
+
+        """
         # never return NULL
         (attr, remainig) = nla_next(self, remainig)
         return (Attribute(ptr=attr, parent=self._parent), remainig)
 
-    def attributes(self):
-        """ Yields of enclosed attributes """
-        attr = Attribute(ptr=self.data(), parent=self._parent)
-        len = self.len()
-        while attr.ok(len):
+    def __iter__(self):
+        """ Yields enclosed attributes """
+        # Sanity check - slower than same in C ...
+        if self.type_ != NLA_NESTED:
+            raise RuntimeError('Trying to iterate enclosed attributes of non-nested attribute')
+
+        attr = Attribute(ptr=self.data(), parent=self)
+        _len = self.len_()
+        while attr.ok(_len):
             yield attr
-            (attr, len) = attr.next(len)
+            (attr, _len) = attr.next(_len)
+        if _len:
+            raise RuntimeError('Extra data after last enclosed attribute')
+        raise StopIteration()

@@ -31,6 +31,6 @@ class CtrlCache(NlCache):
         ptr = genl_ctrl_search_by_name(self, name)
         return Family(ptr=ptr, parent=self)
 
-    def search(self, id):
-        ptr = genl_ctrl_search(self, id)
+    def search(self, _id):
+        ptr = genl_ctrl_search(self, _id)
         return Family(ptr=ptr, parent=self)

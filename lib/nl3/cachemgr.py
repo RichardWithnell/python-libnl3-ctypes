@@ -5,7 +5,7 @@ from __future__ import absolute_import
 
 import traceback
 
-from ..ctypes.libnl3 import *
+from lib.ctypes.libnl3.cache import nl_cache_mngr_add, nl_cache_mngr_free, nl_cache_mngr_alloc, NL_AUTO_PROVIDE, change_func_t
 from .socket import Socket
 
 
@@ -14,7 +14,7 @@ from .socket import Socket
 
 class CacheMgr(object):
     def __init__(self, protocol, sock=None, flags=NL_AUTO_PROVIDE):
-        """ protocol is like NETLINK_GENERIC"""
+        """ protocol is something like NETLINK_GENERIC"""
         #        if sock is None and version < 3.2.8:
         #            raise UnimplementedError('Too old libnl version. It does not support automatic socket allocation')
         self._need_free = False
@@ -22,7 +22,7 @@ class CacheMgr(object):
             sock = Socket()
             #sock.nl_connect(protocol)
 
-        self.__sock = sock # prevent from socket garbage collection
+        self.__sock = sock  # prevent from socket garbage collection
 
         self._as_parameter_ = nl_cache_mngr_alloc(sock, protocol, flags)
         self._need_free = True

@@ -3,19 +3,18 @@
 
 from __future__ import absolute_import
 
-from ..ctypes.libnl3 import *
 from .attribute import Attribute
+from lib.ctypes.libnl3.msg import nlmsg_data, nlmsg_attrdata, nlmsg_attrlen
 
 
 class NlMsgHdr(object):
     _attr_class = Attribute
 
     def __init__(self, ptr, parent):
-        if ptr is not None:
-            self._as_parameter_ = ptr
-            self._parent = parent
-            return
-        raise NotImplementedError('ptr is None')
+        if ptr is None:
+            raise NotImplementedError('ptr is None')
+        self._as_parameter_ = ptr
+        self._parent = parent
 
     data = lambda self: nlmsg_data(self)
     attrlen = lambda self, hdrlen: nlmsg_attrlen(self, hdrlen)
@@ -34,8 +33,10 @@ class NlMsgHdr(object):
 
         :type hdrlen: int
         """
-        pos = self.attrdata(hdrlen)
+        pos = self.attrdata(hdrlen)  # returns Attribute (sub)class
         rem = self.attrlen(hdrlen)
         while pos.ok(rem):
             yield pos
             (pos, rem) = pos.next(rem)
+        if rem:
+            raise RuntimeError('Extra data after nlmsg attributes')

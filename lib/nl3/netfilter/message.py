@@ -8,8 +8,8 @@ from ..message import Message as _Message
 
 
 class Message(_Message):
-    def __init__(self, subsys_id, type, flags, family, res_id):
-        ptr = nfnlmsg_alloc_simple(subsys_id, type, flags, family, res_id)
+    def __init__(self, subsys_id, _type, flags, family, res_id):
+        ptr = nfnlmsg_alloc_simple(subsys_id, _type, flags, family, res_id)
         super(Message, self).__init__(ptr)
         self._need_free = True
 

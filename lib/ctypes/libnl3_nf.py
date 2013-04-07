@@ -49,7 +49,7 @@ def nfnl_ct_alloc_cache(sock):
 
 #noinspection PyUnusedLocal
 @wrap_ptr(nfnl, c_uint8, c_uint8, c_int, c_uint8, c_uint16)
-def nfnlmsg_alloc_simple(subsys_id, type, flags, family, res_id):
+def nfnlmsg_alloc_simple(subsys_id, _type, flags, family, res_id):
     """
     struct nl_msg* nfnlmsg_alloc_simple     (       uint8_t         subsys_id,
     uint8_t         type,

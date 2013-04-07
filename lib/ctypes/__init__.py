@@ -3,6 +3,7 @@
 from __future__ import absolute_import
 
 from ctypes import CDLL, c_void_p, c_char_p, c_int
+from functools import wraps
 
 # monkey-patch __repr__ in that way:
 
@@ -16,7 +17,7 @@ from ctypes import CDLL, c_void_p, c_char_p, c_int
 #        #noinspection PyArgumentList
 #        super(MYDLL, self).__init__(*args, **kwargs)
 #        self._FuncPtr.__repr__ = _ctypes_func_repr
-from functools import wraps
+
 
 MYDLL = CDLL
 
@@ -31,6 +32,7 @@ MYDLL = CDLL
 #    return result
 def profile_that(result, func_name, lib_name):
     result2 = lambda *args: result(*args)
+    # noinspection PyUnresolvedReferences
     codeobj = result2.func_code
     codeobj = codeobj.__class__(
         codeobj.co_argcount,
@@ -44,7 +46,7 @@ def profile_that(result, func_name, lib_name):
         #[],#freevars,
         #[],#cellvars,
         codeobj.co_filename,
-        'ctypes {0}: {1}'.format(lib_name, func_name), #codeobj.co_name,
+        'ctypes {0}: {1}'.format(lib_name, func_name), # codeobj.co_name,
         codeobj.co_firstlineno,
         codeobj.co_lnotab,
         ('result',),
@@ -120,6 +122,6 @@ def wrap_int(*args):
 
 
 # wrap custom types without check
-def wrap_custom(lib, custom, *args):
-    return lambda original: common_loader(original, None, custom, lib, *args)
+def wrap_custom(lib, custom_c_type, *args):
+    return lambda original: common_loader(original, None, custom_c_type, lib, *args)
 

@@ -5,7 +5,8 @@ from __future__ import absolute_import
 
 from ctypes import c_void_p, c_char_p, c_int, POINTER, c_uint32, c_uint, c_uint8
 from . import MYDLL, wrap_ptr, wrap_void, wrap_custom, wrap_ptr_no_check, wrap_int
-from .libnl3 import wrap_nl_err, nlmsg_data, wrap_ret_last_dbl_ptr
+from lib.ctypes.libnl3.msg import nlmsg_data
+from .libnl3 import wrap_nl_err, wrap_ret_last_dbl_ptr
 
 NETLINK_GENERIC = 16
 
@@ -42,7 +43,7 @@ def genl_ctrl_alloc_cache(sock):
 
 #noinspection PyUnusedLocal
 @wrap_ptr(genl, c_nl_cache_p, c_int)
-def genl_ctrl_search(cache, id):
+def genl_ctrl_search(cache, _id):
     """ struct genl_family *genl_ctrl_search(struct nl_cache *, int id); """
 
 #noinspection PyUnusedLocal

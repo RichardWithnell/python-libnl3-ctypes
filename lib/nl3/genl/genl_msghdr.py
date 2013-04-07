@@ -15,11 +15,10 @@ class GenlMsgHdr(object):
     _version = None
 
     def __init__(self, ptr, parent):
-        if ptr is not None:
-            self._as_parameter_ = ptr
-            self._parent = parent
-            return
-        raise NotImplementedError('ptr is None')
+        if ptr is None:
+            raise NotImplementedError('ptr is None')
+        self._as_parameter_ = ptr
+        self._parent = parent
 
     data = lambda self: genlmsg_data(self)
 

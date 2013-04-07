@@ -15,8 +15,11 @@ c_FILE_p = c_void_p
 #noinspection PyUnusedLocal
 def errno_check(result, func, args):
     """
-    :rtype : int
-    :type result: int
+    Python ctypes error checker that should be applied to imported
+    functions that return -1 in case of error, like open()
+
+    :rtype : c_int
+    :type result: c_int
     """
     if result == -1:
         errno = get_errno()
@@ -26,6 +29,13 @@ def errno_check(result, func, args):
 
 #noinspection PyUnusedLocal
 def ptr_errno_check(result, func, args):
+    """
+    Python ctypes error checker that should be applied to imported
+    functions that return NULL in case of error, like malloc()
+
+    :rtype : c_void_p
+    :type result: c_void_p
+    """
     if result == 0:
         errno = get_errno()
         raise OSError(errno, os.strerror(errno))

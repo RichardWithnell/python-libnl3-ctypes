@@ -3,7 +3,7 @@
 
 from __future__ import absolute_import
 
-from ..ctypes.libnl3 import nl_cache_get_next
+from lib.ctypes.libnl3.cache import nl_cache_get_next
 
 
 class NlObject(object):
@@ -15,7 +15,7 @@ class NlObject(object):
         raise NotImplementedError('ptr is None')
 
     def get_next(self):
-        next = nl_cache_get_next(self)
-        if not next:
+        _next = nl_cache_get_next(self)
+        if not _next:
             raise StopIteration()
-        return self.__class__(ptr=next, parent=self._parent)
+        return self.__class__(ptr=_next, parent=self._parent)

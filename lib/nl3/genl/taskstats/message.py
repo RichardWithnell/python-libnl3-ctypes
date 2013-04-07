@@ -3,10 +3,10 @@
 
 from __future__ import absolute_import
 
-from ....ctypes.libnl3 import *
 from ....ctypes.taskstats import *
 from .. import resolve_family
 from ..genl_msghdr import GenlMsgHdr
+from lib.ctypes.libnl3.msg import NL_AUTO_PORT, NL_AUTO_SEQ
 from ..nlmsghdr import NlMsgHdrGENL
 from ..message import MessageGENL
 from .util import get_all_cpus
